@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "items": {
+      "title": "Inventory Item",
+      "description": "Hardware shop inventory items",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "rackLocation": { "type": "string" },
+        "unit": { "type": "string" },
+        "purchasePrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "currentStock": { "type": "number" },
+        "lowStockThreshold": { "type": "number" },
+        "barcode": { "type": "string" },
+        "supplierId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "category", "rackLocation", "unit", "sellingPrice", "currentStock"]
+    },
+    "bills": {
+      "title": "Sales Bill",
+      "description": "Billing invoice history",
+      "properties": {
+        "billNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "gstPercent": { "type": "number" },
+        "gstAmount": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMode": { "type": "string" },
+        "cashierName": { "type": "string" },
+        "cashierId": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["billNumber", "items", "total", "paymentMode", "timestamp"]
+    },
+    "suppliers": {
+      "title": "Supplier",
+      "description": "Hardware suppliers directory",
+      "properties": {
+        "name": { "type": "string" },
+        "contactPerson": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "address": { "type": "string" },
+        "categories": { "type": "array" },
+        "notes": { "type": "string" }
+      },
+      "required": ["name", "phone"]
+    },
+    "udhaar": {
+      "title": "Udhaar Credit Ledger",
+      "description": "Customer credit tracking",
+      "properties": {
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "totalOwed": { "type": "number" },
+        "status": { "type": "string" },
+        "lastUpdated": { "type": "string" },
+        "transactions": { "type": "array" }
+      },
+      "required": ["customerName", "totalOwed"]
+    },
+    "users": {
+      "title": "User Profile",
+      "description": "App users and role definition",
+      "properties": {
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    },
+    "shopSettings": {
+      "title": "Shop Settings",
+      "description": "Shop details for invoices",
+      "properties": {
+        "shopName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "phone": { "type": "string" },
+        "gstin": { "type": "string" },
+        "address": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "terms": { "type": "string" }
+      }
+    }
+  }
+}

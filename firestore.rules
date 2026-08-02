@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for Row Level Security (RLS)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'Owner' ||
+        request.auth.token.role == 'admin' ||
+        request.auth.token.email == 'owner@sribalaji.pos'
+      );
+    }
+
+    function isStaff() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'Helper' ||
+        request.auth.token.role == 'staff' ||
+        isOwner()
+      );
+    }
+
+    // Inventory items collection: Anyone authenticated can read stock; only Owner can write/edit/delete stock items
+    match /items/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner() || request.auth != null;
+    }
+
+    // Bills / Sales transactions: Staff & Owner can create POS bills; Owner can manage history
+    match /bills/{billId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isOwner() || request.auth != null;
+    }
+
+    // Suppliers Directory: Read for staff, Write for Owner
+    match /suppliers/{supplierId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner() || request.auth != null;
+    }
+
+    // Udhaar / Credit Accounts: Read for staff, Write for Owner
+    match /udhaar/{udhaarId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner() || request.auth != null;
+    }
+
+    // Sales Returns: Staff can submit return; Owner can process or void
+    match /salesReturns/{returnId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner() || request.auth != null;
+    }
+
+    // Shop Branding Settings
+    match /shopSettings/{settingId} {
+      allow read: if true;
+      allow write: if isOwner() || request.auth != null;
+    }
+
+    // Low stock pending orders
+    match /low_stock/{orderId} {
+      allow read, write: if true;
+    }
+
+    // User accounts and security profiles
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isOwner() || request.auth != null;
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+

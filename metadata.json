@@ -1,0 +1,8 @@
+{
+  "name": "Remix Hardware Shop Billing \u0026 Inventory",
+  "description": "Digital billing, inventory management, rack tracking, low-stock alerts, udhaar ledger, and daily sales reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
