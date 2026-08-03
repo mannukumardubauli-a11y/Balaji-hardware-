@@ -117,12 +117,12 @@ function MainAppContent() {
     if (direction === 'left') {
       // Swiping left moves to the NEXT tab
       if (currentIndex < availableTabs.length - 1) {
-        setActiveTab(availableTabs[currentIndex + 1]);
+        handleTabChange(availableTabs[currentIndex + 1]);
       }
     } else if (direction === 'right') {
       // Swiping right moves to the PREVIOUS tab
       if (currentIndex > 0) {
-        setActiveTab(availableTabs[currentIndex - 1]);
+        handleTabChange(availableTabs[currentIndex - 1]);
       }
     }
   };
@@ -151,8 +151,8 @@ function MainAppContent() {
 
     touchStartRef.current = null;
 
-    // Must be a predominantly horizontal swipe (>50px, fast enough <600ms)
-    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4 && deltaTime < 600) {
+    // Must be a predominantly horizontal swipe (>40px, fast enough <700ms)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && deltaTime < 700) {
       const target = e.target as HTMLElement;
       // Skip swipe tab change if initiated inside inputs, textareas, or inner scroll boxes
       if (
@@ -165,19 +165,19 @@ function MainAppContent() {
       }
 
       if (deltaX < 0) {
-        if (currentIndex < availableTabs.length - 1) {
-          handleTabChange(availableTabs[currentIndex + 1]);
-        }
+        handleSwipe('left');
       } else {
-        if (currentIndex > 0) {
-          handleTabChange(availableTabs[currentIndex - 1]);
-        }
+        handleSwipe('right');
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white w-full">
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white w-full"
+    >
       {/* Top Navbar */}
       <Navbar activeTab={activeTab} setActiveTab={handleTabChange} />
 

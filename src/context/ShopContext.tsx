@@ -1026,24 +1026,53 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return itemSalesMap[itemId] || 0;
   };
 
-  // Computed Today's Summary (Deducting today's returns for accurate real-time revenue)
+  // Computed Today's & Overall Sales Summary
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayStartTime = todayStart.getTime();
 
   const parseItemTime = (item: any): number => {
     if (!item) return 0;
+
+    // 1. Direct number check
     if (typeof item.createdAt === 'number' && !isNaN(item.createdAt) && item.createdAt > 0) {
       return item.createdAt;
     }
-    if (item.timestamp) {
+    if (typeof item.timestamp === 'number' && !isNaN(item.timestamp) && item.timestamp > 0) {
+      return item.timestamp;
+    }
+    if (typeof item.date === 'number' && !isNaN(item.date) && item.date > 0) {
+      return item.date;
+    }
+
+    // 2. Firestore Timestamp object
+    const tsObj = item.createdAt || item.timestamp || item.date;
+    if (tsObj && typeof tsObj === 'object') {
+      if (typeof tsObj.toMillis === 'function') {
+        try { return tsObj.toMillis(); } catch (e) {}
+      }
+      if (typeof tsObj.seconds === 'number') {
+        return tsObj.seconds * 1000;
+      }
+      if (typeof tsObj._seconds === 'number') {
+        return tsObj._seconds * 1000;
+      }
+    }
+
+    // 3. String timestamps or ISO strings
+    if (typeof item.timestamp === 'string') {
       const parsed = new Date(item.timestamp).getTime();
       if (!isNaN(parsed) && parsed > 0) return parsed;
     }
-    if (item.date) {
+    if (typeof item.createdAt === 'string') {
+      const parsed = new Date(item.createdAt).getTime();
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    if (typeof item.date === 'string') {
       const parsed = new Date(item.date).getTime();
       if (!isNaN(parsed) && parsed > 0) return parsed;
     }
+
     return 0;
   };
 
@@ -1057,20 +1086,12 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return t >= todayStartTime;
   });
 
-  const rawRevenue = todayBills.reduce((sum, b) => {
-    const val = Number(b?.total);
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
+  // Today calculations
+  const todayRawRevenue = todayBills.reduce((sum, b) => sum + (Number(b?.total) || 0), 0);
+  const todayReturnedAmount = todayReturns.reduce((sum, r) => sum + (Number(r?.totalRefundAmount) || 0), 0);
+  const todayNetRevenue = Math.max(0, todayRawRevenue - todayReturnedAmount);
 
-  const totalReturnedAmount = todayReturns.reduce((sum, r) => {
-    const val = Number(r?.totalRefundAmount);
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
-
-  const totalRevenue = Math.max(0, rawRevenue - totalReturnedAmount);
-  const billsCount = todayBills.length;
-
-  const rawProfit = todayBills.reduce((sum, bill) => {
+  const todayRawProfit = todayBills.reduce((sum, bill) => {
     const items = bill?.items || [];
     const billProfit = items.reduce((p, item) => {
       const unitPrice = Number(item?.unitPrice) || 0;
@@ -1079,13 +1100,12 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const qty = Number(item?.quantity) || 1;
       const totalPrice = Number(item?.totalPrice) ?? (unitPrice * qty);
       const cost = purchasePrice * qty;
-      const profit = totalPrice - cost;
-      return p + (isNaN(profit) ? 0 : profit);
+      return p + (totalPrice - cost);
     }, 0);
-    return sum + (isNaN(billProfit) ? 0 : billProfit);
+    return sum + billProfit;
   }, 0);
 
-  const returnProfitReduction = todayReturns.reduce((sum, ret) => {
+  const todayReturnProfitRed = todayReturns.reduce((sum, ret) => {
     const items = ret?.items || [];
     const retProfit = items.reduce((p, item) => {
       const unitPrice = Number(item?.unitPrice) || 0;
@@ -1094,14 +1114,53 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const qty = Number(item?.quantity) || 1;
       const totalPrice = Number(item?.totalPrice) ?? (unitPrice * qty);
       const cost = purchasePrice * qty;
-      const profit = totalPrice - cost;
-      return p + (isNaN(profit) ? 0 : profit);
+      return p + (totalPrice - cost);
     }, 0);
-    return sum + (isNaN(retProfit) ? 0 : retProfit);
+    return sum + retProfit;
   }, 0);
 
-  const netProfitCalc = rawProfit - returnProfitReduction;
-  const estimatedProfit = Math.max(0, isNaN(netProfitCalc) ? 0 : netProfitCalc);
+  const todayNetProfit = Math.max(0, todayRawProfit - todayReturnProfitRed);
+
+  // Overall calculations (All time)
+  const overallRawRevenue = bills.reduce((sum, b) => sum + (Number(b?.total) || 0), 0);
+  const overallReturnedAmount = salesReturns.reduce((sum, r) => sum + (Number(r?.totalRefundAmount) || 0), 0);
+  const overallNetRevenue = Math.max(0, overallRawRevenue - overallReturnedAmount);
+
+  const overallRawProfit = bills.reduce((sum, bill) => {
+    const items = bill?.items || [];
+    const billProfit = items.reduce((p, item) => {
+      const unitPrice = Number(item?.unitPrice) || 0;
+      const rawBuy = Number(item?.purchasePrice);
+      const purchasePrice = (!isNaN(rawBuy) && rawBuy >= 0) ? rawBuy : unitPrice * 0.7;
+      const qty = Number(item?.quantity) || 1;
+      const totalPrice = Number(item?.totalPrice) ?? (unitPrice * qty);
+      const cost = purchasePrice * qty;
+      return p + (totalPrice - cost);
+    }, 0);
+    return sum + billProfit;
+  }, 0);
+
+  const overallReturnProfitRed = salesReturns.reduce((sum, ret) => {
+    const items = ret?.items || [];
+    const retProfit = items.reduce((p, item) => {
+      const unitPrice = Number(item?.unitPrice) || 0;
+      const rawBuy = Number(item?.purchasePrice);
+      const purchasePrice = (!isNaN(rawBuy) && rawBuy >= 0) ? rawBuy : unitPrice * 0.7;
+      const qty = Number(item?.quantity) || 1;
+      const totalPrice = Number(item?.totalPrice) ?? (unitPrice * qty);
+      const cost = purchasePrice * qty;
+      return p + (totalPrice - cost);
+    }, 0);
+    return sum + retProfit;
+  }, 0);
+
+  const overallNetProfit = Math.max(0, overallRawProfit - overallReturnProfitRed);
+
+  // Fallback: If today has bills, show today's. If today has 0 bills but bills exist in shop database, display overall total figures.
+  const displayRevenue = (todayBills.length > 0 || bills.length === 0) ? todayNetRevenue : overallNetRevenue;
+  const displayBillsCount = (todayBills.length > 0 || bills.length === 0) ? todayBills.length : bills.length;
+  const displayProfit = (todayBills.length > 0 || bills.length === 0) ? todayNetProfit : overallNetProfit;
+  const displayReturnsAmount = (todayBills.length > 0 || bills.length === 0) ? todayReturnedAmount : overallReturnedAmount;
 
   return (
     <ShopContext.Provider
@@ -1137,11 +1196,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         itemSalesMap,
         getItemSalesCount,
         todaySalesSummary: {
-          totalRevenue,
-          billsCount,
-          estimatedProfit,
+          totalRevenue: displayRevenue,
+          billsCount: displayBillsCount,
+          estimatedProfit: displayProfit,
           lowStockCount: lowStockItems.length,
-          todayReturnsAmount: totalReturnedAmount
+          todayReturnsAmount: displayReturnsAmount
         }
       }}
     >

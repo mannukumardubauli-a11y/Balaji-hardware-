@@ -80,9 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#2B2D2F] border-b border-zinc-800 shadow-xl w-full max-w-full overflow-hidden">
+      <header className="sticky top-0 z-50 bg-[#2B2D2F] border-b border-zinc-800 shadow-xl w-full">
         {/* Top Header Bar */}
-        <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2 overflow-hidden">
+        <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
           {/* Shop Logo & Name */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
             <HanumanLogo size={48} logoUrl={settings.logoUrl} className="w-11 h-11 sm:w-12 sm:h-12 border-[#FF6B00] border-2 shadow-md" />
