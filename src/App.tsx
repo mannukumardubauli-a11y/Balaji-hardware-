@@ -27,6 +27,39 @@ function MainAppContent() {
 
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
+  // Prevent browser pull-to-refresh on pull down at the top of the screen
+  React.useEffect(() => {
+    let initialTouchY = 0;
+
+    const handleGlobalTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        initialTouchY = e.touches[0].clientY;
+      }
+    };
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        const touchY = e.touches[0].clientY;
+        const touchYDelta = touchY - initialTouchY;
+
+        // If at top of scroll and pulling downwards, prevent default pull-to-refresh
+        if (window.scrollY <= 0 && touchYDelta > 0) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('touchstart', handleGlobalTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+
+    return () => {
+      document.removeEventListener('touchstart', handleGlobalTouchStart);
+      document.removeEventListener('touchmove', handleGlobalTouchMove);
+    };
+  }, []);
+
   if (!isLoggedIn) {
     return (
       <>
