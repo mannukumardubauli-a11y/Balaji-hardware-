@@ -5,6 +5,7 @@ import { ShopProvider, useShop } from './context/ShopContext';
 import { Navbar, TabType } from './components/Navbar';
 import { ToastContainer } from './components/ToastContainer';
 import { BillPDFModal } from './components/BillPDFModal';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 
 import { DashboardPage } from './pages/DashboardPage';
 import { BillingPage } from './pages/BillingPage';
@@ -29,6 +30,7 @@ function MainAppContent() {
   if (!isLoggedIn) {
     return (
       <>
+        <PWAInstallPrompt />
         <LoginPage />
         <ToastContainer />
       </>
@@ -169,6 +171,9 @@ function MainAppContent() {
 
       {/* Floating Toasts Container */}
       <ToastContainer />
+
+      {/* PWA Mobile App Install Banner & Guide */}
+      <PWAInstallPrompt />
     </div>
   );
 }

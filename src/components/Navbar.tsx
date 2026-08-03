@@ -15,7 +15,8 @@ import {
   WifiOff, 
   LogOut,
   RotateCcw,
-  Shield
+  Shield,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useShop } from '../context/ShopContext';
