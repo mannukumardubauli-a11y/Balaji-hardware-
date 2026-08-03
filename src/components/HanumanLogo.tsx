@@ -9,11 +9,11 @@ interface HanumanLogoProps {
 export const HanumanLogo: React.FC<HanumanLogoProps> = ({ 
   className = '', 
   size = 40,
-  logoUrl = "./pwa-icon.png"
+  logoUrl = "https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg"
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  const effectiveUrl = logoUrl || "./pwa-icon.png";
+  const effectiveUrl = logoUrl || "https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg";
 
   return (
     <div 
