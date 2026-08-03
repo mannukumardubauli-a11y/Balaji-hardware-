@@ -98,13 +98,13 @@ function dedupeById<T extends { id: string }>(arr: T[]): T[] {
 
 export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { profile } = useAuth();
-  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [items, setItems] = useState<InventoryItem[]>(() => INITIAL_ITEMS.map((item, idx) => ({ id: `item-seed-${idx}`, ...item })));
   const [bills, setBills] = useState<Bill[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>(() => INITIAL_SUPPLIERS.map((sup, idx) => ({ id: `sup-seed-${idx}`, ...sup })));
   const [udhaar, setUdhaar] = useState<UdhaarRecord[]>([]);
   const [salesReturns, setSalesReturns] = useState<SalesReturnRecord[]>([]);
   const [settings, setSettings] = useState<ShopSettings>(INITIAL_SHOP_SETTINGS);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 

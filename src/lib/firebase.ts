@@ -19,27 +19,35 @@ const firebaseConfig = {
   appId: firebaseConfigJson.appId,
 };
 
-// Initialize Firebase App
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-
-// Initialize Services
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-
-// Initialize Firestore
-const databaseId = firebaseConfigJson.firestoreDatabaseId || undefined;
-export const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-
-// Enable Offline Persistence safely
-if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Firestore persistence failed: Multiple tabs open');
-    } else if (err.code === 'unimplemented') {
-      console.warn('Firestore persistence not supported in this browser');
-    }
-  });
+// Initialize Firebase App safely
+let app: any = null;
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+} catch (e) {
+  console.warn('Firebase initializeApp failed:', e);
 }
 
-export const storage = getStorage(app);
+// Initialize Services safely
+export const auth = app ? getAuth(app) : ({} as any);
+export const googleProvider = new GoogleAuthProvider();
+
+// Initialize Firestore safely
+const databaseId = firebaseConfigJson.firestoreDatabaseId || undefined;
+export const db = app 
+  ? (databaseId ? getFirestore(app, databaseId) : getFirestore(app))
+  : ({} as any);
+
+// Enable Offline Persistence safely without crashing
+if (typeof window !== 'undefined' && app && db && typeof db.app !== 'undefined') {
+  try {
+    enableIndexedDbPersistence(db).catch((err) => {
+      console.warn('Firestore persistence warning:', err?.message);
+    });
+  } catch (err) {
+    console.warn('enableIndexedDbPersistence catch:', err);
+  }
+}
+
+export const storage = app ? getStorage(app) : ({} as any);
 export default app;
+
