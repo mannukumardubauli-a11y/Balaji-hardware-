@@ -21,10 +21,13 @@ import {
   Shield,
   Eye,
   Lock,
-  XCircle
+  XCircle,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { ShopSettings } from '../types';
 import { SecurityAuditModal } from '../components/SecurityAuditModal';
 
@@ -42,6 +45,7 @@ export const SettingsPage: React.FC = () => {
     udhaar
   } = useShop();
   const { role, switchDemoRole, profile, getSavedCredentials, updateSavedCredentials } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const creds = getSavedCredentials();
   const [adminPassInput, setAdminPassInput] = useState(creds.adminPass);
@@ -161,8 +165,73 @@ export const SettingsPage: React.FC = () => {
             <h2 className="text-xl font-bold text-white">Shop Profile & Security Settings</h2>
           </div>
           <p className="text-xs text-zinc-400">
-            Configure invoice header branding, row-level security permissions, user passwords, and backup recovery.
+            Configure invoice header branding, row-level security permissions, visual themes, and backup recovery.
           </p>
+        </div>
+      </div>
+
+      {/* Visual Display Theme (Dark / Light Mode) */}
+      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-500">
+              <Sun className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-white">App Display Theme (Light / Dark Mode)</h3>
+              <p className="text-xs text-zinc-400">Select your preferred POS workspace theme for day or night operation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          {/* Dark Mode Card Option */}
+          <button
+            type="button"
+            onClick={() => setTheme('dark')}
+            className={`p-4 rounded-xl border text-left transition-all flex items-center gap-3.5 cursor-pointer ${
+              theme === 'dark'
+                ? 'bg-zinc-800 border-[#FF6B00] ring-2 ring-[#FF6B00]/30 text-white'
+                : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-amber-400 shrink-0">
+              <Moon className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-sm font-bold flex items-center gap-2">
+                <span>Dark Theme</span>
+                {theme === 'dark' && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FF6B00] text-white font-extrabold">Active</span>
+                )}
+              </div>
+              <p className="text-xs text-zinc-400 mt-0.5">High-contrast dark canvas for eye safety in low light.</p>
+            </div>
+          </button>
+
+          {/* Light Mode Card Option */}
+          <button
+            type="button"
+            onClick={() => setTheme('light')}
+            className={`p-4 rounded-xl border text-left transition-all flex items-center gap-3.5 cursor-pointer ${
+              theme === 'light'
+                ? 'bg-zinc-800 border-[#FF6B00] ring-2 ring-[#FF6B00]/30 text-white'
+                : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-500 shrink-0">
+              <Sun className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-sm font-bold flex items-center gap-2">
+                <span>Light Theme</span>
+                {theme === 'light' && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FF6B00] text-white font-extrabold">Active</span>
+                )}
+              </div>
+              <p className="text-xs text-zinc-400 mt-0.5">Bright, crisp white layout for daytime shop counter environment.</p>
+            </div>
+          </button>
         </div>
       </div>
 
@@ -197,32 +266,32 @@ export const SettingsPage: React.FC = () => {
 
         {/* Security Rule Breakdown Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 bg-zinc-950/80 border border-zinc-800 rounded-xl">
-            <div className="flex items-center gap-1.5 text-[#FF6B00] font-bold mb-1">
+          <div className="p-3.5 bg-white dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 rounded-xl shadow-2xs">
+            <div className="flex items-center gap-1.5 text-[#ea580c] dark:text-[#FF6B00] font-bold mb-1">
               <Lock className="w-3.5 h-3.5" />
               <span>Owner Access Level</span>
             </div>
-            <p className="text-zinc-400 text-[11px] leading-relaxed">
+            <p className="text-slate-600 dark:text-zinc-400 text-[11px] leading-relaxed">
               Full Read / Write / Delete on all tables (items, sales, suppliers, udhaar, low_stock, settings).
             </p>
           </div>
 
-          <div className="p-3 bg-zinc-950/80 border border-zinc-800 rounded-xl">
-            <div className="flex items-center gap-1.5 text-emerald-400 font-bold mb-1">
+          <div className="p-3.5 bg-white dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 rounded-xl shadow-2xs">
+            <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold mb-1">
               <Shield className="w-3.5 h-3.5" />
               <span>Helper Access Level</span>
             </div>
-            <p className="text-zinc-400 text-[11px] leading-relaxed">
+            <p className="text-slate-600 dark:text-zinc-400 text-[11px] leading-relaxed">
               Read-only on master tables; write allowed ONLY for creating POS Sales Bills. Stock edits & deletions blocked by RLS.
             </p>
           </div>
 
-          <div className="p-3 bg-zinc-950/80 border border-zinc-800 rounded-xl">
-            <div className="flex items-center gap-1.5 text-red-400 font-bold mb-1">
+          <div className="p-3.5 bg-white dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 rounded-xl shadow-2xs">
+            <div className="flex items-center gap-1.5 text-red-700 dark:text-red-400 font-bold mb-1">
               <XCircle className="w-3.5 h-3.5" />
               <span>Unauthenticated Access</span>
             </div>
-            <p className="text-zinc-400 text-[11px] leading-relaxed">
+            <p className="text-slate-600 dark:text-zinc-400 text-[11px] leading-relaxed">
               Strictly Zero Access. Non-authenticated queries are immediately rejected at the Firestore database boundary.
             </p>
           </div>

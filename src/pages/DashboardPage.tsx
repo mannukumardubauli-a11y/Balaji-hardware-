@@ -127,7 +127,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       title: 'Shop Settings',
       subtitle: 'QR, नाम & प्रिंटर',
       icon: Wrench,
-      color: 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:border-zinc-500',
+      color: 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:border-zinc-500',
       badge: 'Config'
     },
   ];
@@ -135,21 +135,21 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Top Section: Quick Navigation & Functions (4 boxes per row on desktop) */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-zinc-800/80">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-lg space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-slate-200 dark:border-zinc-800/80">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FF6B00]/20 text-[#FF6B00] border border-[#FF6B00]/30">
                 {role === 'Owner' ? 'Owner Portal' : 'Counter Staff'}
               </span>
-              <span className="text-[11px] text-zinc-400 font-mono">
+              <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
                 {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
               </span>
             </div>
-            <h2 className="text-base sm:text-lg font-black text-white tracking-wide">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-wide">
               Quick Navigation & Functions
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-slate-500 dark:text-zinc-400">
               Directly switch to any shop module
             </p>
           </div>
@@ -178,22 +178,22 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     setActiveTab(item.id);
                   }
                 }}
-                className="flex flex-col justify-between p-2.5 sm:p-3.5 bg-[#202224] hover:bg-[#282a2c] border border-zinc-800 hover:border-[#FF6B00]/50 rounded-xl sm:rounded-2xl transition-all text-left group shadow-md cursor-pointer relative overflow-hidden h-26 sm:h-30 md:h-32"
+                className="flex flex-col justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#202224] hover:bg-slate-50 dark:hover:bg-[#282a2c] border border-slate-200 dark:border-zinc-800 hover:border-[#FF6B00]/50 rounded-xl sm:rounded-2xl transition-all text-left group shadow-sm hover:shadow-md cursor-pointer relative overflow-hidden h-26 sm:h-30 md:h-32"
               >
                 <div className="flex items-start justify-between gap-1 mb-1">
                   <div className={`p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border ${item.color} group-hover:scale-110 transition-transform`}>
                     <IconComponent className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   </div>
-                  <span className="text-[8px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60 shrink-0">
+                  <span className="text-[8px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700/60 shrink-0">
                     {item.badge}
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="text-[11px] sm:text-xs md:text-sm font-bold text-white group-hover:text-[#FF6B00] transition-colors truncate">
+                  <h4 className="text-[11px] sm:text-xs md:text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#FF6B00] transition-colors truncate">
                     {item.title}
                   </h4>
-                  <p className="text-[9px] sm:text-[11px] text-zinc-400 mt-0.5 truncate">
+                  <p className="text-[9px] sm:text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 truncate">
                     {item.subtitle}
                   </p>
                 </div>

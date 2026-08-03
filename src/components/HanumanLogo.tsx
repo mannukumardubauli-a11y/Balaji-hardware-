@@ -26,7 +26,7 @@ export const HanumanLogo: React.FC<HanumanLogoProps> = ({
           alt="Sri Balaji Hardware Logo"
           referrerPolicy="no-referrer"
           onError={() => setImageError(true)}
-          className="w-full h-full object-cover rounded-xl"
+          className="w-full h-full object-cover scale-110 rounded-xl"
         />
       ) : (
         <svg

@@ -34,7 +34,7 @@
   "theme_color": "#FF6B00",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen", "minimal-ui"],
-  "orientation": "any",
+  "orientation": "portrait",
   "categories": ["business", "shopping", "utilities"],
   "scope": "./",
   "prefer_related_applications": false

@@ -465,18 +465,18 @@ export const LowStockAlertsPage: React.FC = () => {
       </div>
 
       {/* SUB-TABS NAVIGATION: Active Low Stock vs Pending Orders */}
-      <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
+      <div className="flex items-center gap-3 border-b border-slate-200 dark:border-zinc-800 pb-3">
         <button
           onClick={() => setActiveTab('demand')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'demand'
               ? 'bg-[#FF6B00] text-white shadow-lg shadow-[#FF6B00]/20'
-              : 'bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-800'
+              : 'bg-white dark:bg-zinc-800/80 text-slate-700 dark:text-zinc-400 border border-slate-300 dark:border-transparent hover:bg-slate-100 dark:hover:bg-zinc-800'
           }`}
         >
           <Layers className="w-4 h-4" />
           <span>Active Low Stock List</span>
-          <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-zinc-900/60 text-white">
+          <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 dark:bg-zinc-900/60 text-slate-800 dark:text-white border border-slate-300 dark:border-zinc-700">
             {activeLowStockList.length}
           </span>
         </button>
@@ -486,17 +486,17 @@ export const LowStockAlertsPage: React.FC = () => {
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer relative ${
             activeTab === 'pending'
               ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/30'
-              : 'bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-800'
+              : 'bg-white dark:bg-zinc-800/80 text-slate-700 dark:text-zinc-400 border border-slate-300 dark:border-transparent hover:bg-slate-100 dark:hover:bg-zinc-800'
           }`}
         >
           <Clock className="w-4 h-4" />
           <span>Pending Orders List</span>
           {pendingOrderItems.length > 0 ? (
-            <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-900 text-emerald-200 border border-emerald-500/40">
+            <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-500/40">
               {pendingOrderItems.length}
             </span>
           ) : (
-            <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-900/60 text-zinc-400">
+            <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-zinc-900/60 text-slate-600 dark:text-zinc-400 border border-slate-300 dark:border-zinc-700">
               0
             </span>
           )}

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ShopProvider, useShop } from './context/ShopContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Navbar, TabType } from './components/Navbar';
 import { ToastContainer } from './components/ToastContainer';
 import { BillPDFModal } from './components/BillPDFModal';
@@ -27,37 +28,17 @@ function MainAppContent() {
 
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
-  // Prevent browser pull-to-refresh on pull down at the top of the screen
+  // Attempt portrait orientation lock if supported
   React.useEffect(() => {
-    let initialTouchY = 0;
-
-    const handleGlobalTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        initialTouchY = e.touches[0].clientY;
+    try {
+      if (window.screen && window.screen.orientation && 'lock' in window.screen.orientation) {
+        (window.screen.orientation as any).lock('portrait').catch(() => {
+          // Ignores lock failure if browser permissions or device restrict it
+        });
       }
-    };
-
-    const handleGlobalTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        const touchY = e.touches[0].clientY;
-        const touchYDelta = touchY - initialTouchY;
-
-        // If at top of scroll and pulling downwards, prevent default pull-to-refresh
-        if (window.scrollY <= 0 && touchYDelta > 0) {
-          if (e.cancelable) {
-            e.preventDefault();
-          }
-        }
-      }
-    };
-
-    document.addEventListener('touchstart', handleGlobalTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
-
-    return () => {
-      document.removeEventListener('touchstart', handleGlobalTouchStart);
-      document.removeEventListener('touchmove', handleGlobalTouchMove);
-    };
+    } catch (e) {
+      // Ignore
+    }
   }, []);
 
   if (!isLoggedIn) {
@@ -150,7 +131,7 @@ function MainAppContent() {
     <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white max-w-full overflow-x-hidden touch-pan-y"
+      className="min-h-screen min-h-dvh bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white max-w-full overflow-x-hidden overflow-y-auto"
     >
       {/* Top Navbar */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -213,10 +194,12 @@ function MainAppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ShopProvider>
-        <MainAppContent />
-      </ShopProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ShopProvider>
+          <MainAppContent />
+        </ShopProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -299,18 +299,18 @@ export const InventoryPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
           {/* Search */}
           <div className="md:col-span-6 relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400 dark:text-zinc-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search item name, rack (Rack B-2), category..."
-              className="w-full pl-10 pr-4 py-2 bg-[#2B2D2F] border border-zinc-700/80 rounded-xl text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#FF6B00]"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#2B2D2F] border border-slate-300 dark:border-zinc-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-400 text-xs focus:outline-none focus:border-[#FF6B00]"
             />
           </div>
 
           {/* Stock Filter Selector */}
-          <div className="md:col-span-4 flex items-center bg-[#2B2D2F] p-1 rounded-xl border border-zinc-700/80 overflow-x-auto no-scrollbar">
+          <div className="md:col-span-4 flex items-center bg-white dark:bg-[#2B2D2F] p-1 rounded-xl border border-slate-300 dark:border-zinc-700/80 overflow-x-auto no-scrollbar shadow-xs">
             {(['All', '🔥 High Demand', 'In Stock', 'Low Stock', 'Out of Stock'] as const).map((filter) => (
               <button
                 key={filter}
@@ -318,7 +318,7 @@ export const InventoryPage: React.FC = () => {
                 className={`flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all whitespace-nowrap ${
                   stockFilter === filter
                     ? 'bg-[#FF6B00] text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {filter}
@@ -331,7 +331,7 @@ export const InventoryPage: React.FC = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 bg-[#2B2D2F] border border-zinc-700/80 rounded-xl text-white text-xs focus:outline-none focus:border-[#FF6B00]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#2B2D2F] border border-slate-300 dark:border-zinc-700/80 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-[#FF6B00]"
             >
               {categories.map((c) => (
                 <option key={c} value={c}>
@@ -360,21 +360,21 @@ export const InventoryPage: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 shadow-md space-y-2.5"
+                className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-3 shadow-xs dark:shadow-md space-y-2.5"
               >
                 {/* Item Name & Status Header */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1 min-w-0 flex-1">
-                    <h4 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2">
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
                       {item.name}
                     </h4>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {salesCount > 0 && (
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#FF6B00]/20 text-[#FF6B00] border border-[#FF6B00]/30">
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#FF6B00]/15 text-[#ea580c] dark:text-[#FF6B00] border border-[#FF6B00]/30">
                           🔥 High Demand ({salesCount} Sold)
                         </span>
                       )}
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-transparent">
                         {item.category}
                       </span>
                       {item.rackLocation && (
@@ -575,14 +575,14 @@ export const InventoryPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setActiveInlineEdit({ itemId: item.id, field: 'saleRate' })}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-[#FF6B00] font-mono bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/60 px-1.5 py-0.5 rounded transition-all active:scale-95 cursor-pointer mt-0.5"
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#ea580c] dark:text-[#FF6B00] font-mono bg-white dark:bg-zinc-800/80 hover:bg-slate-50 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700/60 px-2 py-1 rounded-lg shadow-2xs transition-all active:scale-95 cursor-pointer mt-0.5"
                           title="Tap to change Sale Rate"
                         >
                           <span>₹{item.sellingPrice}/{item.unit}</span>
-                          <span className="text-[9px] text-zinc-300 font-bold">±</span>
+                          <span className="text-[9px] text-slate-500 dark:text-zinc-300 font-bold">±</span>
                         </button>
                       ) : (
-                        <span className="inline-block text-xs font-bold text-[#FF6B00] font-mono bg-zinc-800/80 border border-zinc-800 px-1.5 py-0.5 rounded mt-0.5">
+                        <span className="inline-block text-xs font-bold text-[#ea580c] dark:text-[#FF6B00] font-mono bg-white dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-800 px-2 py-1 rounded-lg mt-0.5">
                           ₹{item.sellingPrice}/{item.unit}
                         </span>
                       )}
@@ -798,14 +798,14 @@ export const InventoryPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setActiveInlineEdit({ itemId: item.id, field: 'buyRate' })}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/60 transition-all active:scale-95 cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-zinc-800/80 hover:bg-slate-50 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700/60 shadow-2xs transition-all active:scale-95 cursor-pointer"
                             title="Click to adjust Buy Rate"
                           >
                             <span>₹{item.purchasePrice}</span>
-                            <span className="text-[10px] text-[#FF6B00] font-bold">±</span>
+                            <span className="text-[10px] text-[#ea580c] dark:text-[#FF6B00] font-bold">±</span>
                           </button>
                         ) : (
-                          <span className="inline-block text-xs font-semibold text-zinc-300 font-mono bg-zinc-800/80 border border-zinc-800 px-2 py-1 rounded">
+                          <span className="inline-block text-xs font-semibold text-slate-700 dark:text-zinc-300 font-mono bg-white dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-800 px-2 py-1 rounded-lg">
                             ₹{item.purchasePrice}
                           </span>
                         )}
@@ -814,16 +814,16 @@ export const InventoryPage: React.FC = () => {
                       {/* Selling Price (Sale Rate) */}
                       <td className="p-4 text-right font-mono">
                         {activeInlineEdit?.itemId === item.id && activeInlineEdit?.field === 'saleRate' ? (
-                          <div className="inline-flex items-center gap-1 bg-[#2B2D2F] border border-[#FF6B00] rounded-xl p-1 shadow-md">
+                          <div className="inline-flex items-center gap-1 bg-white dark:bg-[#2B2D2F] border border-[#FF6B00] rounded-xl p-1 shadow-md">
                             <button
                               type="button"
                               onClick={() => handlePriceChange(item, 'sellingPrice', -1)}
-                              className="w-6 h-6 rounded bg-zinc-800 text-red-400 hover:bg-red-500/20 active:scale-90 font-bold text-xs flex items-center justify-center border border-zinc-700"
+                              className="w-6 h-6 rounded bg-slate-100 dark:bg-zinc-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/20 active:scale-90 font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-zinc-700"
                               title="Decrease Sale Rate (-1)"
                             >
                               -
                             </button>
-                            <div className="flex items-center text-xs font-mono font-bold text-[#FF6B00] bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5">
+                            <div className="flex items-center text-xs font-mono font-bold text-[#ea580c] dark:text-[#FF6B00] bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 rounded px-1 py-0.5">
                               <span className="pr-0.5">₹</span>
                               <input
                                 type="number"
@@ -844,7 +844,7 @@ export const InventoryPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => setActiveInlineEdit(null)}
-                              className="p-1 text-emerald-400 hover:text-emerald-300"
+                              className="p-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
                               title="Done"
                             >
                               <Check className="w-4 h-4" />
@@ -854,14 +854,14 @@ export const InventoryPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setActiveInlineEdit({ itemId: item.id, field: 'saleRate' })}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF6B00] hover:text-[#FF6B00]/90 bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/60 transition-all active:scale-95 cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold text-[#ea580c] dark:text-[#FF6B00] hover:text-[#ea580c]/90 dark:hover:text-[#FF6B00]/90 bg-white dark:bg-zinc-800/80 hover:bg-slate-50 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700/60 shadow-2xs transition-all active:scale-95 cursor-pointer"
                             title="Click to adjust Sale Rate"
                           >
                             <span>₹{item.sellingPrice}</span>
-                            <span className="text-[10px] text-zinc-300 font-bold">±</span>
+                            <span className="text-[10px] text-slate-500 dark:text-zinc-300 font-bold">±</span>
                           </button>
                         ) : (
-                          <span className="inline-block text-xs font-bold text-[#FF6B00] font-mono bg-zinc-800/80 border border-zinc-800 px-2 py-1 rounded">
+                          <span className="inline-block text-xs font-bold text-[#ea580c] dark:text-[#FF6B00] font-mono bg-white dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-800 px-2 py-1 rounded-lg">
                             ₹{item.sellingPrice}
                           </span>
                         )}

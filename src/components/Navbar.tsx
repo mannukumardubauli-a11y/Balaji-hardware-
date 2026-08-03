@@ -16,10 +16,13 @@ import {
   LogOut,
   RotateCcw,
   Shield,
-  Smartphone
+  Smartphone,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useShop } from '../context/ShopContext';
+import { useTheme } from '../context/ThemeContext';
 import { HanumanLogo } from './HanumanLogo';
 import { SecurityAuditModal } from './SecurityAuditModal';
 
@@ -42,6 +45,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const { role, switchDemoRole, logout, profile } = useAuth();
   const { settings, lowStockItems, isOnline } = useShop();
+  const { theme, toggleTheme } = useTheme();
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
 
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState<boolean>(false);
@@ -81,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
         <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2 overflow-hidden">
           {/* Shop Logo & Name */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
-            <HanumanLogo size={42} logoUrl={settings.logoUrl} className="sm:w-11 sm:h-11 border-[#FF6B00]" />
+            <HanumanLogo size={48} logoUrl={settings.logoUrl} className="w-11 h-11 sm:w-12 sm:h-12 border-[#FF6B00] border-2 shadow-md" />
             <div className="min-w-0">
               <h1 className="text-xs sm:text-base md:text-lg font-bold text-white tracking-wide leading-tight break-words flex items-center gap-2">
                 {settings.shopName || 'Sri Balaji Hardware and Paint Store'}
@@ -98,6 +102,25 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
           {/* Right Status Controls */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Theme Toggle Button (Dark / Light Mode) */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 light:bg-slate-200 light:hover:bg-slate-300 text-amber-400 dark:text-amber-400 light:text-amber-600 border border-amber-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+                  <span className="hidden sm:inline">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-indigo-600" />
+                  <span className="hidden sm:inline">Dark</span>
+                </>
+              )}
+            </button>
+
             {/* RLS Security Audit Logs Trigger Button */}
             <button
               onClick={() => setIsSecurityModalOpen(true)}
