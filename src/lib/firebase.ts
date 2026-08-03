@@ -5,7 +5,10 @@ import {
 } from 'firebase/auth';
 import { 
   getFirestore, 
-  enableIndexedDbPersistence 
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  enableIndexedDbPersistence
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import firebaseConfigJson from '../../firebase-applet-config.json';
@@ -33,24 +36,32 @@ try {
 export const auth = app ? getAuth(app) : null;
 export const googleProvider = app ? new GoogleAuthProvider() : null;
 
-// Initialize Firestore safely
+// Initialize Firestore safely with persistent local cache
 const databaseId = firebaseConfigJson?.firestoreDatabaseId || undefined;
-export const db = app 
-  ? (databaseId ? getFirestore(app, databaseId) : getFirestore(app))
-  : null;
+let firestoreDb: any = null;
 
-// Enable Offline Persistence safely without crashing
-if (typeof window !== 'undefined' && db) {
+if (app) {
   try {
-    enableIndexedDbPersistence(db).catch((err) => {
-      console.warn('Firestore persistence warning:', err?.message);
-    });
+    const firestoreSettings = {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    };
+    firestoreDb = databaseId 
+      ? initializeFirestore(app, firestoreSettings, databaseId)
+      : initializeFirestore(app, firestoreSettings);
   } catch (err) {
-    console.warn('enableIndexedDbPersistence catch:', err);
+    console.warn('initializeFirestore persistent cache fallback:', err);
+    firestoreDb = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
+    if (typeof window !== 'undefined') {
+      enableIndexedDbPersistence(firestoreDb).catch(() => {});
+    }
   }
 }
 
+export const db = firestoreDb;
 export const storage = app ? getStorage(app) : null;
 export default app;
+
 
 
