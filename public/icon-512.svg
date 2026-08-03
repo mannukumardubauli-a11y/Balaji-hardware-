@@ -2,23 +2,39 @@
   <defs>
     <linearGradient id="bgGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="50%" stop-color="#09090b"/>
       <stop offset="100%" stop-color="#000000"/>
     </linearGradient>
     <linearGradient id="orangeGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FF8C00"/>
+      <stop offset="50%" stop-color="#FF6B00"/>
       <stop offset="100%" stop-color="#D94600"/>
     </linearGradient>
-    <clipPath id="circleClip512">
-      <rect width="512" height="512" rx="100"/>
-    </clipPath>
   </defs>
 
   <rect width="512" height="512" rx="100" fill="url(#bgGrad512)"/>
-  <rect x="12" y="12" width="488" height="488" rx="88" fill="none" stroke="url(#orangeGrad512)" stroke-width="12"/>
+  <rect x="16" y="16" width="480" height="480" rx="84" fill="none" stroke="url(#orangeGrad512)" stroke-width="12"/>
 
-  <g clip-path="url(#circleClip512)">
-    <image href="https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg" x="20" y="20" width="472" height="472" preserveAspectRatio="xMidYMid slice" />
+  <!-- Center Hanuman Ji Vector Badge -->
+  <g transform="translate(106, 76) scale(1.5)">
+    <rect width="200" height="220" rx="28" fill="#0A0A0A" stroke="url(#orangeGrad512)" stroke-width="3"/>
+    <g fill="#FF6B00">
+      <path d="M 92 32 C 92 20 108 20 108 32 L 108 72 C 108 84 92 84 92 72 Z" />
+      <path d="M 96 35 L 104 35 L 104 68 L 96 68 Z" fill="#0A0A0A" />
+      <circle cx="100" cy="78" r="4" fill="#FF6B00" />
+      <path d="M 60 70 C 80 62 90 70 95 76 C 88 78 72 74 60 70 Z" />
+      <path d="M 140 70 C 120 62 110 70 105 76 C 112 78 128 74 140 70 Z" />
+      <path d="M 108 82 C 118 78 132 82 138 88 C 128 94 115 92 108 82 Z" />
+      <circle cx="122" cy="86" r="3" fill="#0A0A0A" />
+      <path d="M 95 78 C 96 90 92 105 85 118 C 95 116 110 114 118 108 C 108 100 100 90 95 78 Z" />
+      <path d="M 70 115 C 80 120 100 125 115 120 C 110 128 90 135 75 130 C 68 125 65 120 70 115 Z" />
+      <path d="M 142 90 C 155 92 160 108 152 118 C 145 115 142 102 142 90 Z" />
+      <path d="M 152 112 C 162 116 162 132 150 134 C 144 128 146 118 152 112 Z" fill="none" stroke="#FF6B00" stroke-width="4" />
+      <path d="M 135 50 C 155 45 175 60 180 80 C 170 78 160 70 148 68 C 158 80 170 95 185 110 C 172 108 160 100 152 92 Z" />
+      <path d="M 155 120 C 170 130 185 150 175 170 C 168 155 160 140 148 132 Z" />
+      <path d="M 75 135 C 85 155 100 180 125 200 C 105 195 85 175 65 150 C 60 140 68 135 75 135 Z" />
+      <path d="M 115 138 C 130 155 150 178 165 195 C 150 188 135 170 122 152 Z" />
+    </g>
   </g>
-
-  <rect x="20" y="20" width="472" height="472" rx="80" fill="none" stroke="#FF6B00" stroke-width="8" opacity="0.8"/>
+  <text x="256" y="460" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="28" fill="#FF8C00" letter-spacing="3" text-anchor="middle">SRI BALAJI HARDWARE</text>
 </svg>
