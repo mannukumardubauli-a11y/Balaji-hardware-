@@ -195,36 +195,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        try {
-          const userRef = doc(db, 'users', currentUser.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            const data = userSnap.data() as UserProfile;
-            setProfile(data);
-            setRole(data.role || 'Owner');
-          } else {
-            const newProfile: UserProfile = {
-              uid: currentUser.uid,
-              email: currentUser.email || 'user@shop.com',
-              name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Shop Staff',
-              role: 'Owner'
-            };
-            await setDoc(userRef, newProfile);
-            setProfile(newProfile);
-            setRole('Owner');
-          }
-          setIsLoggedIn(true);
-        } catch (err) {
-          console.error('Error fetching user profile:', err);
-        }
-      }
-      setLoading(false);
-    });
+    let unsubscribe = () => {};
 
-    return () => unsubscribe();
+    if (auth) {
+      try {
+        unsubscribe = onAuthStateChanged(
+          auth,
+          async (currentUser) => {
+            setUser(currentUser);
+            if (currentUser && db) {
+              try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                  const data = userSnap.data() as UserProfile;
+                  setProfile(data);
+                  setRole(data.role || 'Owner');
+                } else {
+                  const newProfile: UserProfile = {
+                    uid: currentUser.uid,
+                    email: currentUser.email || 'user@shop.com',
+                    name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Shop Staff',
+                    role: 'Owner'
+                  };
+                  await setDoc(userRef, newProfile);
+                  setProfile(newProfile);
+                  setRole('Owner');
+                }
+                setIsLoggedIn(true);
+              } catch (err) {
+                console.error('Error fetching user profile:', err);
+              }
+            }
+            setLoading(false);
+          },
+          (err) => {
+            console.warn('onAuthStateChanged error:', err);
+            setLoading(false);
+          }
+        );
+      } catch (err) {
+        console.warn('onAuthStateChanged init catch:', err);
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+
+    return () => {
+      try {
+        unsubscribe();
+      } catch (e) {}
+    };
   }, []);
 
   const loginWithCredentials = (userIdInput: string, passInput: string): { success: boolean; message?: string } => {
@@ -329,14 +351,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithEmail = async (email: string, pass: string) => {
     setLoading(true);
-    await signInWithEmailAndPassword(auth, email, pass);
-    setIsLoggedIn(true);
-    setLoading(false);
+    try {
+      if (auth) {
+        await signInWithEmailAndPassword(auth, email, pass);
+      }
+      setIsLoggedIn(true);
+    } catch (err) {
+      console.warn('loginWithEmail error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    if (auth.currentUser) {
-      await firebaseSignOut(auth);
+    try {
+      if (auth && auth.currentUser) {
+        await firebaseSignOut(auth);
+      }
+    } catch (err) {
+      console.warn('logout error:', err);
     }
     addAuditLog('LOGOUT', `User ${profile?.email || 'session'} logged out.`, 'SUCCESS');
     setIsLoggedIn(false);

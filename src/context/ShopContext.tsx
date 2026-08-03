@@ -139,6 +139,12 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Real-time Firestore Listeners with Fallback Local Sync
   useEffect(() => {
+    if (!db) {
+      console.warn('Firestore db is not initialized. Operating in local mode.');
+      setLoading(false);
+      return;
+    }
+
     let unsubItems: () => void = () => {};
     let unsubBills: () => void = () => {};
     let unsubSuppliers: () => void = () => {};
@@ -167,7 +173,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('Items subscription warning:', err);
         }
       );
+    } catch (e) {
+      console.warn('Items listener setup failed:', e);
+    }
 
+    try {
       // 2. Bills Listener
       unsubBills = onSnapshot(
         collection(db, 'bills'),
@@ -183,7 +193,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('Bills subscription warning:', err);
         }
       );
+    } catch (e) {
+      console.warn('Bills listener setup failed:', e);
+    }
 
+    try {
       // 3. Suppliers Listener
       unsubSuppliers = onSnapshot(
         collection(db, 'suppliers'),
@@ -198,7 +212,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('Suppliers subscription warning:', err);
         }
       );
+    } catch (e) {
+      console.warn('Suppliers listener setup failed:', e);
+    }
 
+    try {
       // 4. Udhaar Listener
       unsubUdhaar = onSnapshot(
         collection(db, 'udhaar'),
@@ -213,7 +231,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('Udhaar subscription warning:', err);
         }
       );
+    } catch (e) {
+      console.warn('Udhaar listener setup failed:', e);
+    }
 
+    try {
       // 5. Sales Returns Listener
       unsubReturns = onSnapshot(
         collection(db, 'salesReturns'),
@@ -229,7 +251,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('SalesReturns subscription warning:', err);
         }
       );
+    } catch (e) {
+      console.warn('SalesReturns listener setup failed:', e);
+    }
 
+    try {
       // 6. Shop Settings Listener
       unsubSettings = onSnapshot(
         doc(db, 'shopSettings', 'main'),
@@ -259,11 +285,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
               data.gstin !== "" ||
               !data.proprietor
             ) {
-              setDoc(doc(db, 'shopSettings', 'main'), updated).catch(() => {});
+              if (db) setDoc(doc(db, 'shopSettings', 'main'), updated).catch(() => {});
             }
             setSettings(updated);
           } else {
-            setDoc(doc(db, 'shopSettings', 'main'), INITIAL_SHOP_SETTINGS).catch(() => {});
+            if (db) setDoc(doc(db, 'shopSettings', 'main'), INITIAL_SHOP_SETTINGS).catch(() => {});
             setSettings(INITIAL_SHOP_SETTINGS);
           }
         },
@@ -271,20 +297,19 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('ShopSettings subscription warning:', err);
         }
       );
-
-    } catch (err) {
-      console.error('Firestore listener error:', err);
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.warn('ShopSettings listener setup failed:', e);
     }
 
+    setLoading(false);
+
     return () => {
-      unsubItems();
-      unsubBills();
-      unsubSuppliers();
-      unsubUdhaar();
-      unsubReturns();
-      unsubSettings();
+      try { unsubItems(); } catch (e) {}
+      try { unsubBills(); } catch (e) {}
+      try { unsubSuppliers(); } catch (e) {}
+      try { unsubUdhaar(); } catch (e) {}
+      try { unsubReturns(); } catch (e) {}
+      try { unsubSettings(); } catch (e) {}
     };
   }, []);
 
