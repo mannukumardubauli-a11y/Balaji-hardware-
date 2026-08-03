@@ -163,6 +163,54 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
+
+        {/* Quick Demo Credentials Assistant */}
+        <div className="mt-6 pt-5 border-t border-zinc-800/80">
+          <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2.5 text-center">
+            🔑 Default Login Credentials (1-Tap Auto Fill)
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setUserId('balaji274302');
+                setPassword('11224455');
+              }}
+              className="p-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 rounded-xl text-left transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5 text-orange-400 font-bold text-xs">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin / Owner</span>
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono truncate">
+                ID: <strong className="text-zinc-200">balaji274302</strong>
+              </div>
+              <div className="text-[11px] text-zinc-400 font-mono truncate">
+                Pass: <strong className="text-zinc-200">11224455</strong>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setUserId('helpstore821');
+                setPassword('balaji11224455@');
+              }}
+              className="p-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 rounded-xl text-left transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>Helper / Staff</span>
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono truncate">
+                ID: <strong className="text-zinc-200">helpstore821</strong>
+              </div>
+              <div className="text-[11px] text-zinc-400 font-mono truncate">
+                Pass: <strong className="text-zinc-200">balaji11224...</strong>
+              </div>
+            </button>
+          </div>
+        </div>
       </motion.div>
 
       {/* Footer copyright note */}

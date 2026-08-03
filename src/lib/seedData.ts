@@ -10,7 +10,7 @@ export const INITIAL_SHOP_SETTINGS: ShopSettings = {
   address: "Dubauli Bazaar, Tower se 100 meter Dakshin",
   gstin: "",
   terms: "1. Goods once sold will be replaced within 7 days if defective.\n2. Invoice / bill copy required for any claims.\n3. Thank you for your business!",
-  logoUrl: "https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg"
+  logoUrl: "./pwa-icon.png"
 };
 
 export const INITIAL_SUPPLIERS: Omit<Supplier, 'id'>[] = [

@@ -273,7 +273,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: data.email || "P209824@gmail.com",
               upiId: activeUpiId,
               gstin: "", // GST Number removed per user request
-              logoUrl: "https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg"
+              logoUrl: "./pwa-icon.png"
             };
 
             if (

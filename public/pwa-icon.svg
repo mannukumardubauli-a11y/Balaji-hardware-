@@ -1,73 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#18181b"/>
-      <stop offset="50%" stop-color="#09090b"/>
+      <stop offset="0%" stop-color="#121215"/>
+      <stop offset="50%" stop-color="#08080a"/>
       <stop offset="100%" stop-color="#000000"/>
     </linearGradient>
     
     <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF8C00"/>
+      <stop offset="0%" stop-color="#FF9D00"/>
       <stop offset="50%" stop-color="#FF6B00"/>
-      <stop offset="100%" stop-color="#D94600"/>
+      <stop offset="100%" stop-color="#E64A00"/>
     </linearGradient>
 
     <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.3"/>
+      <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.35"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
   <!-- Background Container -->
-  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
   
-  <!-- Outer Border -->
-  <rect x="16" y="16" width="480" height="480" rx="84" fill="none" stroke="url(#orangeGrad)" stroke-width="12"/>
-  <rect x="28" y="28" width="456" height="456" rx="72" fill="none" stroke="#27272a" stroke-width="4"/>
+  <!-- Outer Glow Ring -->
+  <circle cx="256" cy="256" r="230" fill="url(#glowGrad)"/>
 
-  <!-- Radial Glow Behind Head -->
-  <circle cx="256" cy="256" r="210" fill="url(#glowGrad)"/>
+  <!-- Stylish Border -->
+  <rect x="14" y="14" width="484" height="484" rx="96" fill="none" stroke="url(#orangeGrad)" stroke-width="12"/>
 
-  <!-- Center Hanuman Ji Vector Shield/Badge -->
-  <g transform="translate(106, 76) scale(1.5)">
-    <!-- Dark Emblem Frame -->
-    <rect width="200" height="220" rx="28" fill="#0A0A0A" stroke="url(#orangeGrad)" stroke-width="3"/>
-
-    <!-- Lord Hanuman Orange Silhouette Vector Artwork -->
+  <!-- Centered Hanuman Ji Face Vector Artwork -->
+  <g transform="translate(68, 52) scale(1.88)">
     <g fill="#FF6B00">
-      <!-- Tilak on Forehead -->
-      <path d="M 92 32 C 92 20 108 20 108 32 L 108 72 C 108 84 92 84 92 72 Z" />
-      <path d="M 96 35 L 104 35 L 104 68 L 96 68 Z" fill="#0A0A0A" />
-      <circle cx="100" cy="78" r="4" fill="#FF6B00" />
+      <!-- U-shaped Tilak on Forehead -->
+      <path d="M 92 28 C 92 16 108 16 108 28 L 108 68 C 108 80 92 80 92 68 Z" />
+      <path d="M 96 32 L 104 32 L 104 64 L 96 64 Z" fill="#0A0A0A" />
+      <circle cx="100" cy="74" r="4.5" fill="#FF6B00" />
 
-      <!-- Eyebrows & Facial Features -->
-      <path d="M 60 70 C 80 62 90 70 95 76 C 88 78 72 74 60 70 Z" />
-      <path d="M 140 70 C 120 62 110 70 105 76 C 112 78 128 74 140 70 Z" />
+      <!-- Eyebrows & Powerful Expression -->
+      <path d="M 55 68 C 78 58 90 68 96 74 C 88 77 70 72 55 68 Z" />
+      <path d="M 145 68 C 122 58 110 68 104 74 C 112 77 130 72 145 68 Z" />
 
       <!-- Piercing Eye -->
-      <path d="M 108 82 C 118 78 132 82 138 88 C 128 94 115 92 108 82 Z" />
-      <circle cx="122" cy="86" r="3" fill="#0A0A0A" />
+      <path d="M 108 80 C 120 75 135 80 142 87 C 130 93 115 91 108 80 Z" />
+      <circle cx="123" cy="85" r="3.5" fill="#0A0A0A" />
 
-      <!-- Nose Bridge -->
-      <path d="M 95 78 C 96 90 92 105 85 118 C 95 116 110 114 118 108 C 108 100 100 90 95 78 Z" />
+      <!-- Nose Bridge & Muzzle -->
+      <path d="M 96 76 C 97 88 93 104 85 116 C 96 114 112 112 120 106 C 110 98 102 88 96 76 Z" />
 
-      <!-- Jaw & Mouth -->
-      <path d="M 70 115 C 80 120 100 125 115 120 C 110 128 90 135 75 130 C 68 125 65 120 70 115 Z" />
+      <!-- Jaw & Lips -->
+      <path d="M 68 113 C 78 118 100 123 116 118 C 110 126 90 133 74 128 C 66 123 63 118 68 113 Z" />
 
       <!-- Ear & Kundal -->
-      <path d="M 142 90 C 155 92 160 108 152 118 C 145 115 142 102 142 90 Z" />
-      <path d="M 152 112 C 162 116 162 132 150 134 C 144 128 146 118 152 112 Z" fill="none" stroke="#FF6B00" stroke-width="4" />
+      <path d="M 144 88 C 158 90 164 106 155 116 C 147 113 144 100 144 88 Z" />
+      <path d="M 154 110 C 165 114 165 130 152 132 C 146 126 148 116 154 110 Z" fill="none" stroke="#FF6B00" stroke-width="4.5" />
 
-      <!-- Flowing Mane/Hair -->
-      <path d="M 135 50 C 155 45 175 60 180 80 C 170 78 160 70 148 68 C 158 80 170 95 185 110 C 172 108 160 100 152 92 Z" />
-      <path d="M 155 120 C 170 130 185 150 175 170 C 168 155 160 140 148 132 Z" />
+      <!-- Mane / Hair Flowing -->
+      <path d="M 136 48 C 158 42 180 58 186 78 C 174 76 162 68 150 66 C 160 78 172 93 188 108 C 174 106 162 98 154 90 Z" />
+      <path d="M 156 118 C 172 128 188 148 178 168 C 170 153 162 138 150 130 Z" />
 
-      <!-- Muscular Neck -->
-      <path d="M 75 135 C 85 155 100 180 125 200 C 105 195 85 175 65 150 C 60 140 68 135 75 135 Z" />
-      <path d="M 115 138 C 130 155 150 178 165 195 C 150 188 135 170 122 152 Z" />
+      <!-- Muscular Neck & Shoulder -->
+      <path d="M 74 133 C 85 153 100 178 126 198 C 105 193 84 173 64 148 C 58 138 67 133 74 133 Z" />
+      <path d="M 116 136 C 132 153 152 176 168 193 C 152 186 136 168 123 150 Z" />
     </g>
   </g>
-
-  <!-- Bottom Shop Text -->
-  <text x="256" y="460" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="28" fill="#FF8C00" letter-spacing="3" text-anchor="middle">SRI BALAJI HARDWARE</text>
 </svg>
