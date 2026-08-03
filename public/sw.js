@@ -1,8 +1,12 @@
-const CACHE_NAME = 'balaji-pos-cache-v1';
+const CACHE_NAME = 'balaji-pos-cache-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './pwa-icon.png',
+  './apple-touch-icon.png',
   './pwa-icon.svg',
   './icon-192.svg',
   './icon-512.svg'
