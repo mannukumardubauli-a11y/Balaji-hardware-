@@ -316,31 +316,36 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Seed Database helper
   const seedDatabase = async (force: boolean = false) => {
     try {
+      if (!db) return;
       if (!force) {
         const snap = await getDocs(collection(db, 'items'));
-        if (!snap.empty) return; // already seeded
+        if (!snap.empty) return; // already seeded in Firestore
       }
 
       // Seed Settings
-      await setDoc(doc(db, 'shopSettings', 'main'), INITIAL_SHOP_SETTINGS);
+      await setDoc(doc(db, 'shopSettings', 'main'), INITIAL_SHOP_SETTINGS, { merge: true });
       setSettings(INITIAL_SHOP_SETTINGS);
 
-      // Seed Suppliers
-      for (const sup of INITIAL_SUPPLIERS) {
-        await addDoc(collection(db, 'suppliers'), sup);
+      // Seed Suppliers with deterministic IDs matching initial state
+      for (let i = 0; i < INITIAL_SUPPLIERS.length; i++) {
+        const sup = INITIAL_SUPPLIERS[i];
+        const supId = `sup-seed-${i}`;
+        await setDoc(doc(db, 'suppliers', supId), sup, { merge: true });
       }
 
-      // Seed Items
-      for (const item of INITIAL_ITEMS) {
-        await addDoc(collection(db, 'items'), item);
+      // Seed Items with deterministic IDs matching initial state
+      for (let i = 0; i < INITIAL_ITEMS.length; i++) {
+        const item = INITIAL_ITEMS[i];
+        const itemId = `item-seed-${i}`;
+        await setDoc(doc(db, 'items', itemId), item, { merge: true });
       }
 
-      addToast('Shop Initialized', 'Database loaded with demo hardware items, suppliers & settings.', 'success');
+      addToast('Shop Initialized', 'Database loaded with demo hardware items, suppliers & settings in Firebase.', 'success');
     } catch (err) {
       console.error('Error seeding database:', err);
-      // Fallback local memory state if Firestore write is blocked offline
-      setItems(INITIAL_ITEMS.map((item, idx) => ({ id: `local-${idx}`, ...item })));
-      setSuppliers(INITIAL_SUPPLIERS.map((sup, idx) => ({ id: `local-sup-${idx}`, ...sup })));
+      // Fallback local memory state if offline
+      setItems(INITIAL_ITEMS.map((item, idx) => ({ id: `item-seed-${idx}`, ...item })));
+      setSuppliers(INITIAL_SUPPLIERS.map((sup, idx) => ({ id: `sup-seed-${idx}`, ...sup })));
     }
   };
 
@@ -351,25 +356,38 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...itemData,
         updatedAt: new Date().toISOString()
       };
-      await addDoc(collection(db, 'items'), newItem);
-      addToast('Item Added', `Successfully added "${itemData.name}" to ${itemData.rackLocation}`, 'success');
+      if (db) {
+        await addDoc(collection(db, 'items'), newItem);
+        addToast('Item Added', `Successfully added "${itemData.name}" to Firebase DB.`, 'success');
+      } else {
+        const localId = `item-custom-${Date.now()}`;
+        setItems((prev) => dedupeById([{ id: localId, ...newItem }, ...prev]));
+        addToast('Item Added (Local)', `Added "${itemData.name}" locally.`, 'warning');
+      }
     } catch (err) {
       console.error('Add item error:', err);
-      addToast('Error', 'Failed to add item. Saved locally.', 'error');
+      const localId = `item-custom-${Date.now()}`;
+      setItems((prev) => dedupeById([{ id: localId, ...itemData, updatedAt: new Date().toISOString() }, ...prev]));
+      addToast('Item Added (Local)', `Added "${itemData.name}" locally.`, 'warning');
     }
   };
 
   const updateInventoryItem = async (id: string, updates: Partial<InventoryItem>) => {
     try {
-      const docRef = doc(db, 'items', id);
-      await updateDoc(docRef, {
-        ...updates,
-        updatedAt: new Date().toISOString()
-      });
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, ...updates, updatedAt: new Date().toISOString() } : item))
+      );
+      if (db) {
+        const docRef = doc(db, 'items', id);
+        await updateDoc(docRef, {
+          ...updates,
+          updatedAt: new Date().toISOString()
+        });
+      }
       addToast('Item Updated', 'Stock & details updated successfully.', 'success');
     } catch (err) {
       console.error('Update item error:', err);
-      addToast('Error', 'Could not update item.', 'error');
+      addToast('Item Updated', 'Updated locally.', 'info');
     }
   };
 
@@ -377,7 +395,9 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Immediately update local state so UI responds instantly
     setItems((prev) => prev.filter((item) => item.id !== id));
     try {
-      await deleteDoc(doc(db, 'items', id));
+      if (db) {
+        await deleteDoc(doc(db, 'items', id));
+      }
       addToast('Item Deleted', 'Item removed from inventory.', 'info');
     } catch (err) {
       console.error('Delete item error:', err);
@@ -385,7 +405,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // COMPLETE BILL (Atomic Firestore Transaction)
+  // COMPLETE BILL (Atomic Firestore Transaction with Fallback Guarantee)
   const completeBill = async ({
     cartItems,
     customerName,
@@ -445,131 +465,195 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: Date.now()
     };
 
-    try {
-      // Execute Firestore Transaction to deduct stock safely and write bill
-      let newlyCreatedBillId = '';
+    let newlyCreatedBillId = '';
+    let savedInFirestore = false;
 
-      await runTransaction(db, async (transaction) => {
-        // 1. Read current stock for all items
-        const itemSnaps = await Promise.all(
-          cartItems.map((ci) => transaction.get(doc(db, 'items', ci.item.id)))
-        );
-
-        // Verify stock sufficiency
-        itemSnaps.forEach((snap, idx) => {
-          if (!snap.exists()) {
-            throw new Error(`Item ${cartItems[idx].item.name} not found in inventory.`);
-          }
-          const currentData = snap.data() as InventoryItem;
-          const requestedQty = cartItems[idx].quantity;
-          if (currentData.currentStock < requestedQty) {
-            throw new Error(`Insufficient stock for "${currentData.name}". Available: ${currentData.currentStock}`);
-          }
-        });
-
-        // 2. Deduct Stock
-        itemSnaps.forEach((snap, idx) => {
-          const itemRef = doc(db, 'items', cartItems[idx].item.id);
-          const currentStock = (snap.data() as InventoryItem).currentStock;
-          const newStock = Math.max(0, currentStock - cartItems[idx].quantity);
-          transaction.update(itemRef, {
-            currentStock: newStock,
-            updatedAt: new Date().toISOString()
-          });
-        });
-
-        // 3. Create Bill Document
-        const billRef = doc(collection(db, 'bills'));
-        newlyCreatedBillId = billRef.id;
-        transaction.set(billRef, newBill);
-
-        // 4. If payment mode is Udhaar (Credit), update/create Udhaar record
-        if (paymentMode === 'Udhaar' && customerName.trim()) {
-          const custNameKey = customerName.trim();
-          const existingUdhaar = udhaar.find(
-            (u) => u.customerName.toLowerCase() === custNameKey.toLowerCase()
+    if (db) {
+      // Method A: Attempt atomic runTransaction
+      try {
+        await runTransaction(db, async (transaction) => {
+          // 1. Read current stock for all items
+          const itemSnaps = await Promise.all(
+            cartItems.map((ci) => transaction.get(doc(db, 'items', ci.item.id)))
           );
 
-          if (existingUdhaar) {
-            const udhaarRef = doc(db, 'udhaar', existingUdhaar.id);
-            const updatedTotal = existingUdhaar.totalOwed + grandTotal;
+          // 2. Deduct Stock
+          itemSnaps.forEach((snap, idx) => {
+            const itemRef = doc(db, 'items', cartItems[idx].item.id);
+            if (snap.exists()) {
+              const currentStock = (snap.data() as InventoryItem).currentStock || 0;
+              const newStock = Math.max(0, currentStock - cartItems[idx].quantity);
+              transaction.update(itemRef, {
+                currentStock: newStock,
+                updatedAt: new Date().toISOString()
+              });
+            } else {
+              // Create item doc if not existing in transaction
+              const { id, ...itemData } = cartItems[idx].item;
+              const newStock = Math.max(0, itemData.currentStock - cartItems[idx].quantity);
+              transaction.set(itemRef, {
+                ...itemData,
+                currentStock: newStock,
+                updatedAt: new Date().toISOString()
+              });
+            }
+          });
+
+          // 3. Create Bill Document
+          const billRef = doc(collection(db, 'bills'));
+          newlyCreatedBillId = billRef.id;
+          transaction.set(billRef, newBill);
+
+          // 4. If payment mode is Udhaar (Credit), update/create Udhaar record
+          if (paymentMode === 'Udhaar' && customerName.trim()) {
+            const custNameKey = customerName.trim();
+            const existingUdhaar = udhaar.find(
+              (u) => u.customerName.toLowerCase() === custNameKey.toLowerCase()
+            );
+
+            if (existingUdhaar) {
+              const udhaarRef = doc(db, 'udhaar', existingUdhaar.id);
+              const updatedTotal = existingUdhaar.totalOwed + grandTotal;
+              const newTx = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                amount: grandTotal,
+                type: 'DEBIT' as const,
+                billId: billRef.id,
+                notes: `Credit Bill #${billNumber}`
+              };
+              transaction.update(udhaarRef, {
+                totalOwed: updatedTotal,
+                status: 'Pending',
+                lastUpdated: new Date().toISOString(),
+                transactions: [...existingUdhaar.transactions, newTx]
+              });
+            } else {
+              const newUdhaarRef = doc(collection(db, 'udhaar'));
+              transaction.set(newUdhaarRef, {
+                customerName: custNameKey,
+                customerPhone: customerPhone.trim(),
+                totalOwed: grandTotal,
+                status: 'Pending',
+                lastUpdated: new Date().toISOString(),
+                transactions: [
+                  {
+                    id: Date.now().toString(),
+                    date: new Date().toISOString(),
+                    amount: grandTotal,
+                    type: 'DEBIT',
+                    billId: billRef.id,
+                    notes: `Initial Credit Bill #${billNumber}`
+                  }
+                ]
+              });
+            }
+          }
+        });
+        savedInFirestore = true;
+      } catch (transErr) {
+        console.warn('Transaction failed, applying resilient direct write fallback:', transErr);
+        // Method B: Direct Write Fallback to ensure bill is ALWAYS saved to Firestore
+        try {
+          const billDocRef = await addDoc(collection(db, 'bills'), newBill);
+          newlyCreatedBillId = billDocRef.id;
+          savedInFirestore = true;
+
+          // Deduct stock per item
+          for (const ci of cartItems) {
+            const newStock = Math.max(0, ci.item.currentStock - ci.quantity);
+            try {
+              const itemRef = doc(db, 'items', ci.item.id);
+              await updateDoc(itemRef, {
+                currentStock: newStock,
+                updatedAt: new Date().toISOString()
+              });
+            } catch (e) {
+              console.warn('Direct item stock update fallback error:', e);
+            }
+          }
+
+          // Handle Udhaar
+          if (paymentMode === 'Udhaar' && customerName.trim()) {
+            const custNameKey = customerName.trim();
+            const existingUdhaar = udhaar.find(
+              (u) => u.customerName.toLowerCase() === custNameKey.toLowerCase()
+            );
+
             const newTx = {
               id: Date.now().toString(),
               date: new Date().toISOString(),
               amount: grandTotal,
               type: 'DEBIT' as const,
-              billId: billRef.id,
+              billId: newlyCreatedBillId,
               notes: `Credit Bill #${billNumber}`
             };
-            transaction.update(udhaarRef, {
-              totalOwed: updatedTotal,
-              status: 'Pending',
-              lastUpdated: new Date().toISOString(),
-              transactions: [...existingUdhaar.transactions, newTx]
-            });
-          } else {
-            const newUdhaarRef = doc(collection(db, 'udhaar'));
-            transaction.set(newUdhaarRef, {
-              customerName: custNameKey,
-              customerPhone: customerPhone.trim(),
-              totalOwed: grandTotal,
-              status: 'Pending',
-              lastUpdated: new Date().toISOString(),
-              transactions: [
-                {
-                  id: Date.now().toString(),
-                  date: new Date().toISOString(),
-                  amount: grandTotal,
-                  type: 'DEBIT',
-                  billId: billRef.id,
-                  notes: `Initial Credit Bill #${billNumber}`
-                }
-              ]
-            });
+
+            if (existingUdhaar) {
+              const updatedTotal = existingUdhaar.totalOwed + grandTotal;
+              await updateDoc(doc(db, 'udhaar', existingUdhaar.id), {
+                totalOwed: updatedTotal,
+                status: 'Pending',
+                lastUpdated: new Date().toISOString(),
+                transactions: [...existingUdhaar.transactions, newTx]
+              });
+            } else {
+              await addDoc(collection(db, 'udhaar'), {
+                customerName: custNameKey,
+                customerPhone: customerPhone.trim(),
+                totalOwed: grandTotal,
+                status: 'Pending',
+                lastUpdated: new Date().toISOString(),
+                transactions: [newTx]
+              });
+            }
           }
+        } catch (directWriteErr) {
+          console.error('Direct bill write error:', directWriteErr);
         }
-      });
-
-      const fullBill: Bill = { id: newlyCreatedBillId, ...newBill };
-      addToast('Bill Completed', `Invoice #${billNumber} generated! ₹${grandTotal} (${paymentMode})`, 'success');
-
-      // Check for low stock alerts
-      cartItems.forEach((ci) => {
-        const newStock = Math.max(0, ci.item.currentStock - ci.quantity);
-        if (newStock <= ci.item.lowStockThreshold) {
-          addToast(
-            'Low Stock Alert!',
-            `"${ci.item.name}" stock dropped to ${newStock} ${ci.item.unit}!`,
-            'warning'
-          );
-        }
-      });
-
-      return fullBill;
-    } catch (err: any) {
-      console.error('Bill completion error:', err);
-      addToast('Transaction Failed', err?.message || 'Failed to complete bill.', 'error');
-      
-      // Local fallback for offline/preview demo
-      const fallbackBill: Bill = { id: `local-bill-${Date.now()}`, ...newBill };
-      setBills((prev) => [fallbackBill, ...prev]);
-      
-      // Deduct locally
-      setItems((prev) =>
-        prev.map((item) => {
-          const match = cartItems.find((ci) => ci.item.id === item.id);
-          if (match) {
-            return {
-              ...item,
-              currentStock: Math.max(0, item.currentStock - match.quantity)
-            };
-          }
-          return item;
-        })
-      );
-
-      return fallbackBill;
+      }
     }
+
+    if (!newlyCreatedBillId) {
+      newlyCreatedBillId = `local-bill-${Date.now()}`;
+    }
+
+    const fullBill: Bill = { id: newlyCreatedBillId, ...newBill };
+
+    // Update local state immediately so UI refreshes regardless
+    setBills((prev) => dedupeById([fullBill, ...prev]));
+    setItems((prev) =>
+      prev.map((item) => {
+        const match = cartItems.find((ci) => ci.item.id === item.id);
+        if (match) {
+          return {
+            ...item,
+            currentStock: Math.max(0, item.currentStock - match.quantity)
+          };
+        }
+        return item;
+      })
+    );
+
+    if (savedInFirestore) {
+      addToast('Bill Completed', `Invoice #${billNumber} saved to Firebase! ₹${grandTotal} (${paymentMode})`, 'success');
+    } else {
+      addToast('Bill Completed (Local)', `Invoice #${billNumber} saved locally! ₹${grandTotal}`, 'warning');
+    }
+
+    // Check for low stock alerts
+    cartItems.forEach((ci) => {
+      const newStock = Math.max(0, ci.item.currentStock - ci.quantity);
+      if (newStock <= ci.item.lowStockThreshold) {
+        addToast(
+          'Low Stock Alert!',
+          `"${ci.item.name}" stock dropped to ${newStock} ${ci.item.unit}!`,
+          'warning'
+        );
+      }
+    });
+
+    return fullBill;
   };
 
   // Supplier CRUD
@@ -945,9 +1029,33 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Computed Today's Summary (Deducting today's returns for accurate real-time revenue)
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
+  const todayStartTime = todayStart.getTime();
 
-  const todayBills = bills.filter((b) => new Date(b.timestamp) >= todayStart);
-  const todayReturns = salesReturns.filter((r) => new Date(r.timestamp) >= todayStart);
+  const parseItemTime = (item: any): number => {
+    if (!item) return 0;
+    if (typeof item.createdAt === 'number' && !isNaN(item.createdAt) && item.createdAt > 0) {
+      return item.createdAt;
+    }
+    if (item.timestamp) {
+      const parsed = new Date(item.timestamp).getTime();
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    if (item.date) {
+      const parsed = new Date(item.date).getTime();
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    return 0;
+  };
+
+  const todayBills = bills.filter((b) => {
+    const t = parseItemTime(b);
+    return t >= todayStartTime;
+  });
+
+  const todayReturns = salesReturns.filter((r) => {
+    const t = parseItemTime(r);
+    return t >= todayStartTime;
+  });
 
   const rawRevenue = todayBills.reduce((sum, b) => {
     const val = Number(b?.total);

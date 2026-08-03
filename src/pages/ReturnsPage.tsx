@@ -344,7 +344,7 @@ export const ReturnsPage: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-2.5 max-h-[600px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 gap-2.5">
           {filteredReturns.map((record) => (
             <div
               key={record.id}

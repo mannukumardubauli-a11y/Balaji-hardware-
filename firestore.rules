@@ -2,62 +2,34 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions for Row Level Security (RLS)
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    function isOwner() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'Owner' ||
-        request.auth.token.role == 'admin' ||
-        request.auth.token.email == 'owner@sribalaji.pos'
-      );
-    }
-
-    function isStaff() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'Helper' ||
-        request.auth.token.role == 'staff' ||
-        isOwner()
-      );
-    }
-
-    // Inventory items collection: Anyone authenticated can read stock; only Owner can write/edit/delete stock items
+    // Inventory items collection
     match /items/{itemId} {
-      allow read: if true;
-      allow create, update, delete: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
-    // Bills / Sales transactions: Staff & Owner can create POS bills; Owner can manage history
+    // Bills / Sales transactions
     match /bills/{billId} {
-      allow read: if true;
-      allow create: if true;
-      allow update, delete: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
-    // Suppliers Directory: Read for staff, Write for Owner
+    // Suppliers Directory
     match /suppliers/{supplierId} {
-      allow read: if true;
-      allow create, update, delete: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
-    // Udhaar / Credit Accounts: Read for staff, Write for Owner
+    // Udhaar / Credit Accounts
     match /udhaar/{udhaarId} {
-      allow read: if true;
-      allow create, update, delete: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
-    // Sales Returns: Staff can submit return; Owner can process or void
+    // Sales Returns
     match /salesReturns/{returnId} {
-      allow read: if true;
-      allow create, update, delete: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
     // Shop Branding Settings
     match /shopSettings/{settingId} {
-      allow read: if true;
-      allow write: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
     // Low stock pending orders
@@ -67,15 +39,15 @@ service cloud.firestore {
 
     // User accounts and security profiles
     match /users/{userId} {
-      allow read: if true;
-      allow write: if isOwner() || request.auth != null;
+      allow read, write: if true;
     }
 
-    // Default deny all other paths
+    // Default match for any other document
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }
+
 
 

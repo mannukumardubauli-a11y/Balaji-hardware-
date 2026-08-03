@@ -205,7 +205,7 @@ export const UdhaarLedgerPage: React.FC = () => {
                   </div>
 
                   {/* Recent Transactions list */}
-                  <div className="space-y-1.5 text-xs text-zinc-400 max-h-[120px] overflow-y-auto pr-1">
+                  <div className="space-y-1.5 text-xs text-zinc-400 pr-1">
                     <span className="text-[10px] uppercase font-bold text-zinc-500 block">Ledger History:</span>
                     {record.transactions.slice(-3).map((tx) => (
                       <div

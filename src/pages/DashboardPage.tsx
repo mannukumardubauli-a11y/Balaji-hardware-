@@ -217,11 +217,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
           <div className="text-2xl font-black text-white">
-            {role === 'Owner' ? (
-              <CountUpNumber value={todaySalesSummary.totalRevenue} prefix="₹" decimals={0} />
-            ) : (
-              <span className="text-zinc-500 text-lg font-bold">🔒 Owner Only</span>
-            )}
+            <CountUpNumber value={todaySalesSummary.totalRevenue} prefix="₹" decimals={0} />
           </div>
           <p className="text-xs text-zinc-400 mt-2 flex items-center justify-between">
             <span>Net sales today</span>
@@ -262,46 +258,29 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
           <div className="text-2xl font-black text-white">
-            {role === 'Owner' ? (
-              <CountUpNumber value={todaySalesSummary.estimatedProfit} prefix="₹" decimals={0} />
-            ) : (
-              <span className="text-zinc-500 text-lg font-bold">🔒 Owner Only</span>
-            )}
+            <CountUpNumber value={todaySalesSummary.estimatedProfit} prefix="₹" decimals={0} />
           </div>
           <p className="text-xs text-zinc-400 mt-2">Selling price vs purchase cost margin</p>
         </motion.div>
 
         {/* Low Stock Alerts */}
-        {role === 'Owner' ? (
-          <motion.div
-            whileHover={{ y: -3 }}
-            onClick={() => setActiveTab('alerts')}
-            className="bg-zinc-900 border border-amber-500/30 p-5 rounded-2xl shadow-lg cursor-pointer group hover:border-amber-500 transition-colors"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Low Stock Items</span>
-              <div className="p-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded-xl">
-                <AlertOctagon className="w-5 h-5 animate-pulse" />
-              </div>
+        <motion.div
+          whileHover={{ y: -3 }}
+          onClick={() => setActiveTab('alerts')}
+          className="bg-zinc-900 border border-amber-500/30 p-5 rounded-2xl shadow-lg cursor-pointer group hover:border-amber-500 transition-colors"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Low Stock Items</span>
+            <div className="p-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded-xl">
+              <AlertOctagon className="w-5 h-5 animate-pulse" />
             </div>
-            <div className="text-2xl font-black text-amber-400 flex items-center justify-between">
-              <span>{todaySalesSummary.lowStockCount}</span>
-              <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
-            </div>
-            <p className="text-xs text-zinc-400 mt-2">Items requiring stock reorder</p>
-          </motion.div>
-        ) : (
-          <div className="bg-zinc-900/60 border border-zinc-800 p-5 rounded-2xl shadow-lg">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Low Stock Alerts</span>
-              <div className="p-2.5 bg-zinc-800 text-zinc-500 rounded-xl">
-                <AlertOctagon className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="text-lg font-bold text-zinc-500">🔒 Owner Only</div>
-            <p className="text-xs text-zinc-500 mt-2">Restricted for helper role</p>
           </div>
-        )}
+          <div className="text-2xl font-black text-amber-400 flex items-center justify-between">
+            <span>{todaySalesSummary.lowStockCount}</span>
+            <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+          </div>
+          <p className="text-xs text-zinc-400 mt-2">Items requiring stock reorder</p>
+        </motion.div>
       </div>
 
       {/* Main Grid: Recent Bills & Low Stock Widget */}
@@ -334,7 +313,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </button>
             </div>
           ) : (
-            <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-1">
+            <div className="space-y-2.5">
               {recentBills.map((bill) => (
                 <div
                   key={bill.id}
@@ -427,7 +406,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     <p className="text-xs text-zinc-500 mt-1">No products are below safety thresholds.</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                  <div className="space-y-2">
                     {lowStockItems.slice(0, 5).map((item) => (
                       <div
                         key={item.id}

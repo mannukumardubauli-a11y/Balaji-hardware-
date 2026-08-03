@@ -28,17 +28,62 @@ function MainAppContent() {
 
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
-  // Attempt portrait orientation lock if supported
+  // Initialize history state on mount so back button navigates in-app instead of exiting app
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      window.history.replaceState({ tab: 'dashboard' }, '');
+    }
+  }, [isLoggedIn]);
+
+  // Handle browser & physical mobile Back button
+  React.useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const handlePopState = (e: PopStateEvent) => {
+      // If PDF modal is currently open, back button closes the modal
+      if (selectedBillForPDF) {
+        setSelectedBillForPDF(null);
+        return;
+      }
+
+      if (e.state && e.state.tab) {
+        setActiveTab(e.state.tab as TabType);
+      } else {
+        // Fallback to dashboard if popped to root history
+        setActiveTab('dashboard');
+        window.history.pushState({ tab: 'dashboard' }, '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isLoggedIn, selectedBillForPDF]);
+
+  // Tab switch handler with browser history support
+  const handleTabChange = (newTab: TabType) => {
+    if (newTab !== activeTab) {
+      window.history.pushState({ tab: newTab }, '');
+      setActiveTab(newTab);
+    }
+  };
+
+  // Open PDF modal with history state push
+  const handleOpenBillPDF = (bill: Bill | null) => {
+    if (bill) {
+      window.history.pushState({ modal: 'pdf', billId: bill.id }, '');
+      setSelectedBillForPDF(bill);
+    } else {
+      setSelectedBillForPDF(null);
+    }
+  };
+
+  // Attempt portrait orientation lock
   React.useEffect(() => {
     try {
       if (window.screen && window.screen.orientation && 'lock' in window.screen.orientation) {
-        (window.screen.orientation as any).lock('portrait').catch(() => {
-          // Ignores lock failure if browser permissions or device restrict it
-        });
+        (window.screen.orientation as any).lock('portrait').catch(() => {});
       }
-    } catch (e) {
-      // Ignore
-    }
+    } catch (e) {}
   }, []);
 
   if (!isLoggedIn) {
@@ -120,21 +165,21 @@ function MainAppContent() {
       }
 
       if (deltaX < 0) {
-        handleSwipe('left');
+        if (currentIndex < availableTabs.length - 1) {
+          handleTabChange(availableTabs[currentIndex + 1]);
+        }
       } else {
-        handleSwipe('right');
+        if (currentIndex > 0) {
+          handleTabChange(availableTabs[currentIndex - 1]);
+        }
       }
     }
   };
 
   return (
-    <div
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      className="min-h-screen min-h-dvh bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white max-w-full overflow-x-hidden overflow-y-auto"
-    >
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-white w-full">
       {/* Top Navbar */}
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navbar activeTab={activeTab} setActiveTab={handleTabChange} />
 
       {/* Main Page Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -148,14 +193,14 @@ function MainAppContent() {
           >
             {activeTab === 'dashboard' && (
               <DashboardPage
-                setActiveTab={setActiveTab}
-                onSelectBillForPreview={(bill) => setSelectedBillForPDF(bill)}
+                setActiveTab={handleTabChange}
+                onSelectBillForPreview={(bill) => handleOpenBillPDF(bill)}
               />
             )}
 
             {activeTab === 'billing' && (
               <BillingPage
-                onBillCompleted={(bill) => setSelectedBillForPDF(bill)}
+                onBillCompleted={(bill) => handleOpenBillPDF(bill)}
               />
             )}
 
