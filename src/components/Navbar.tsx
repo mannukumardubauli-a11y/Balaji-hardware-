@@ -128,35 +128,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
               )}
             </div>
 
-            {/* Role Switcher Pill & Logout */}
+            {/* Role Badge & Logout */}
             <div className="flex items-center gap-1.5 shrink-0">
-              <div className="flex items-center bg-zinc-800 p-0.5 sm:p-1 rounded-xl border border-zinc-700/80">
-                <button
-                  onClick={() => switchDemoRole('Owner')}
-                  title="Switch to Admin Mode"
-                  className={`flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
-                    role === 'Owner'
-                      ? 'bg-[#FF6B00] text-white shadow-sm font-bold'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              {role === 'Owner' ? (
+                <div className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold bg-[#FF6B00] text-white shadow-sm border border-orange-500/30">
+                  <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Admin</span>
-                </button>
-
-                <button
-                  onClick={() => switchDemoRole('Helper')}
-                  title="Switch to Helper Mode"
-                  className={`flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
-                    role === 'Helper'
-                      ? 'bg-emerald-600 text-white shadow-sm font-bold'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <UserCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm border border-emerald-500/30">
+                  <UserCheck className="w-3.5 h-3.5" />
                   <span>Helper</span>
-                </button>
-              </div>
+                </div>
+              )}
 
               {/* Logout Button */}
               <button

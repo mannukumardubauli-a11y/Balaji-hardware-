@@ -243,28 +243,17 @@ export const SettingsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-[#2B2D2F] p-1.5 rounded-xl border border-zinc-700">
-          <span className="text-xs text-zinc-400 px-2 font-medium">Switch Active Role:</span>
-          <button
-            onClick={() => switchDemoRole('Owner')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-              role === 'Owner'
-                ? 'bg-[#FF6B00] text-white shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Admin
-          </button>
-          <button
-            onClick={() => switchDemoRole('Helper')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-              role === 'Helper'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Helper
-          </button>
+        <div className="flex items-center gap-2 bg-[#2B2D2F] px-3 py-1.5 rounded-xl border border-zinc-700">
+          <span className="text-xs text-zinc-400 font-medium">Logged-in Role:</span>
+          {role === 'Owner' ? (
+            <span className="px-3 py-1 bg-[#FF6B00] text-white rounded-lg text-xs font-bold shadow-sm">
+              Admin (Owner)
+            </span>
+          ) : (
+            <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm">
+              Helper (Staff)
+            </span>
+          )}
         </div>
       </div>
 
@@ -290,11 +279,11 @@ export const SettingsPage: React.FC = () => {
               <span className="px-2 py-0.5 bg-orange-950 text-orange-400 rounded text-[10px]">Owner</span>
             </div>
             <div className="text-xs text-zinc-300 space-y-1 font-mono">
-              <p><span className="text-zinc-500">User ID:</span> <strong className="text-white font-bold">admin</strong></p>
+              <p><span className="text-zinc-500">User ID:</span> <strong className="text-white font-bold">{creds.adminUser}</strong></p>
               <div className="flex items-center gap-2 pt-1">
                 <span className="text-zinc-500 text-[11px] font-sans">Password:</span>
                 <input
-                  type="text"
+                  type="password"
                   disabled={role !== 'Owner'}
                   value={adminPassInput}
                   onChange={(e) => setAdminPassInput(e.target.value)}
@@ -311,11 +300,11 @@ export const SettingsPage: React.FC = () => {
               <span className="px-2 py-0.5 bg-emerald-950 text-emerald-400 rounded text-[10px]">Helper</span>
             </div>
             <div className="text-xs text-zinc-300 space-y-1 font-mono">
-              <p><span className="text-zinc-500">User ID:</span> <strong className="text-white font-bold">helper</strong></p>
+              <p><span className="text-zinc-500">User ID:</span> <strong className="text-white font-bold">{creds.helperUser}</strong></p>
               <div className="flex items-center gap-2 pt-1">
                 <span className="text-zinc-500 text-[11px] font-sans">Password:</span>
                 <input
-                  type="text"
+                  type="password"
                   disabled={role !== 'Owner'}
                   value={helperPassInput}
                   onChange={(e) => setHelperPassInput(e.target.value)}

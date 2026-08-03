@@ -6,7 +6,7 @@ import { useShop } from '../context/ShopContext';
 import { HanumanLogo } from '../components/HanumanLogo';
 
 export const LoginPage: React.FC = () => {
-  const { loginWithCredentials, loginDemoOwner, loginDemoHelper, getSavedCredentials, lockoutRemainingSec } = useAuth();
+  const { loginWithCredentials, lockoutRemainingSec } = useAuth();
   const { settings } = useShop();
 
   const [userId, setUserId] = useState('');
@@ -14,8 +14,6 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const creds = getSavedCredentials();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +25,7 @@ export const LoginPage: React.FC = () => {
     }
 
     if (!userId.trim()) {
-      setErrorMsg('Please enter User ID (e.g., admin or helper)');
+      setErrorMsg('Please enter User ID');
       return;
     }
     if (!password.trim()) {
@@ -43,18 +41,6 @@ export const LoginPage: React.FC = () => {
         setErrorMsg(res.message || 'Invalid User ID or Password.');
       }
     }, 250);
-  };
-
-  const fillAdminPreset = () => {
-    setUserId('admin');
-    setPassword(creds.adminPass || 'admin123');
-    setErrorMsg('');
-  };
-
-  const fillHelperPreset = () => {
-    setUserId('helper');
-    setPassword(creds.helperPass || 'helper123');
-    setErrorMsg('');
   };
 
   return (
@@ -126,7 +112,7 @@ export const LoginPage: React.FC = () => {
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 disabled={lockoutRemainingSec > 0}
-                placeholder="e.g. admin or helper"
+                placeholder="Enter User ID"
                 className="w-full pl-10 pr-4 py-3 bg-zinc-900/90 border border-zinc-700/80 rounded-xl text-sm font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF6B00] focus:ring-1 focus:ring-[#FF6B00] transition-all disabled:opacity-50"
                 autoCapitalize="none"
                 autoCorrect="off"
@@ -148,7 +134,7 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={lockoutRemainingSec > 0}
-                placeholder="Enter password"
+                placeholder="Enter Password"
                 className="w-full pl-10 pr-11 py-3 bg-zinc-900/90 border border-zinc-700/80 rounded-xl text-sm font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF6B00] focus:ring-1 focus:ring-[#FF6B00] transition-all disabled:opacity-50"
               />
               <button
@@ -177,73 +163,6 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
-
-        {/* Quick Presets / Test Credentials Section */}
-        <div className="mt-8 pt-6 border-t border-zinc-800">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 text-center">
-            Quick User ID & Password Options
-          </p>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            {/* Admin Preset */}
-            <button
-              type="button"
-              onClick={fillAdminPreset}
-              className="p-3 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 rounded-2xl text-left transition-all group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5 mb-1 text-[#FF6B00] font-bold text-xs">
-                <ShieldCheck className="w-4 h-4 shrink-0" />
-                <span>Admin (Owner)</span>
-              </div>
-              <div className="text-[11px] text-zinc-400 space-y-0.5">
-                <p><span className="text-zinc-500">ID:</span> <span className="text-zinc-200 font-mono font-bold">admin</span></p>
-                <p><span className="text-zinc-500">Pass:</span> <span className="text-zinc-200 font-mono font-bold">{creds.adminPass}</span></p>
-              </div>
-              <div className="mt-2 text-[10px] text-[#FF6B00] font-semibold group-hover:underline">
-                Auto-fill Admin →
-              </div>
-            </button>
-
-            {/* Helper Preset */}
-            <button
-              type="button"
-              onClick={fillHelperPreset}
-              className="p-3 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 rounded-2xl text-left transition-all group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5 mb-1 text-emerald-400 font-bold text-xs">
-                <UserCheck className="w-4 h-4 shrink-0" />
-                <span>Helper (Staff)</span>
-              </div>
-              <div className="text-[11px] text-zinc-400 space-y-0.5">
-                <p><span className="text-zinc-500">ID:</span> <span className="text-zinc-200 font-mono font-bold">helper</span></p>
-                <p><span className="text-zinc-500">Pass:</span> <span className="text-zinc-200 font-mono font-bold">{creds.helperPass}</span></p>
-              </div>
-              <div className="mt-2 text-[10px] text-emerald-400 font-semibold group-hover:underline">
-                Auto-fill Helper →
-              </div>
-            </button>
-          </div>
-
-          {/* Quick Direct Login buttons for instant preview */}
-          <div className="mt-4 flex items-center justify-between text-xs text-zinc-400 px-1">
-            <span>Direct Access:</span>
-            <div className="flex items-center gap-3 font-semibold">
-              <button 
-                onClick={loginDemoOwner}
-                className="text-[#FF6B00] hover:underline cursor-pointer"
-              >
-                Direct Admin
-              </button>
-              <span>•</span>
-              <button 
-                onClick={loginDemoHelper}
-                className="text-emerald-400 hover:underline cursor-pointer"
-              >
-                Direct Helper
-              </button>
-            </div>
-          </div>
-        </div>
       </motion.div>
 
       {/* Footer copyright note */}

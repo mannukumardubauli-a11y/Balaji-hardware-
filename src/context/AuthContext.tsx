@@ -164,20 +164,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Load custom credentials from localStorage or defaults
   const getSavedCredentials = () => {
     try {
-      const adminPass = localStorage.getItem('cred_admin_pass') || 'admin123';
-      const helperPass = localStorage.getItem('cred_helper_pass') || 'helper123';
+      const adminUser = localStorage.getItem('cred_admin_user') || 'balaji274302';
+      const adminPass = localStorage.getItem('cred_admin_pass') || '11224455';
+      const helperUser = localStorage.getItem('cred_helper_user') || 'helpstore821';
+      const helperPass = localStorage.getItem('cred_helper_pass') || 'balaji11224455@';
       return {
-        adminUser: 'admin',
+        adminUser,
         adminPass,
-        helperUser: 'helper',
+        helperUser,
         helperPass
       };
     } catch (e) {
       return {
-        adminUser: 'admin',
-        adminPass: 'admin123',
-        helperUser: 'helper',
-        helperPass: 'helper123'
+        adminUser: 'balaji274302',
+        adminPass: '11224455',
+        helperUser: 'helpstore821',
+        helperPass: 'balaji11224455@'
       };
     }
   };
@@ -237,10 +239,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanId = userIdInput.trim().toLowerCase();
     const cleanPass = passInput.trim();
 
-    // Check Admin / Owner matching
+    // Auto-Detect Admin / Owner Role from User ID & Password
     if (
-      (cleanId === 'admin' || cleanId === 'owner' || cleanId === 'admin@balajihardware.com') &&
-      (cleanPass === creds.adminPass || cleanPass === 'admin' || cleanPass === 'admin123')
+      (cleanId === creds.adminUser.toLowerCase() || cleanId === 'balaji274302' || cleanId === 'admin' || cleanId === 'owner' || cleanId === 'admin@balajihardware.com') &&
+      (cleanPass === creds.adminPass || cleanPass === '11224455' || cleanPass === 'admin123')
     ) {
       setRole('Owner');
       setProfile({
@@ -255,10 +257,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: true };
     }
 
-    // Check Helper matching
+    // Auto-Detect Helper / Staff Role from User ID & Password
     if (
-      (cleanId === 'helper' || cleanId === 'staff' || cleanId === 'helper@balajihardware.com') &&
-      (cleanPass === creds.helperPass || cleanPass === 'helper' || cleanPass === 'helper123')
+      (cleanId === creds.helperUser.toLowerCase() || cleanId === 'helpstore821' || cleanId === 'helper' || cleanId === 'staff' || cleanId === 'helper@balajihardware.com') &&
+      (cleanPass === creds.helperPass || cleanPass === 'balaji11224455@' || cleanPass === 'helper123')
     ) {
       setRole('Helper');
       setProfile({
@@ -289,7 +291,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return {
       success: false,
-      message: `Invalid User ID or Password (Attempt ${nextAttempts}/5). Admin: admin / admin123 • Helper: helper / helper123.`
+      message: `Invalid User ID or Password. Please check your credentials and try again (Attempt ${nextAttempts}/5).`
     };
   };
 

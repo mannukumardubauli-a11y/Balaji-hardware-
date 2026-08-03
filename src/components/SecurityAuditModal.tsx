@@ -77,13 +77,13 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({ isOpen, 
           </div>
 
           <div className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl">
-            <span className="text-[10px] text-zinc-400 font-medium block uppercase">Admin ID</span>
-            <span className="font-mono font-bold text-white text-xs mt-0.5 block">admin / {creds.adminPass}</span>
+            <span className="text-[10px] text-zinc-400 font-medium block uppercase">Admin Account</span>
+            <span className="font-mono font-bold text-[#FF6B00] text-xs mt-0.5 block">Protected (Encrypted)</span>
           </div>
 
           <div className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl">
-            <span className="text-[10px] text-zinc-400 font-medium block uppercase">Helper ID</span>
-            <span className="font-mono font-bold text-white text-xs mt-0.5 block">helper / {creds.helperPass}</span>
+            <span className="text-[10px] text-zinc-400 font-medium block uppercase">Helper Account</span>
+            <span className="font-mono font-bold text-emerald-400 text-xs mt-0.5 block">Protected (Encrypted)</span>
           </div>
 
           <div className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl">
