@@ -8,11 +8,17 @@
       <stop offset="0%" stop-color="#FF8C00"/>
       <stop offset="100%" stop-color="#D94600"/>
     </linearGradient>
+    <clipPath id="circleClip512">
+      <rect width="512" height="512" rx="100"/>
+    </clipPath>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bgGrad512)"/>
-  <rect x="16" y="16" width="480" height="480" rx="80" fill="none" stroke="url(#orangeGrad512)" stroke-width="12"/>
-  <path d="M256 70 L390 120 V250 C390 350 256 430 256 430 C256 430 122 350 122 250 V120 Z" fill="#121215" stroke="url(#orangeGrad512)" stroke-width="12"/>
-  <circle cx="256" cy="240" r="70" fill="url(#orangeGrad512)"/>
-  <text x="256" y="270" font-family="Arial, sans-serif" font-weight="900" font-size="85" fill="#ffffff" text-anchor="middle">B</text>
-  <text x="256" y="460" font-family="Arial, sans-serif" font-weight="800" font-size="34" fill="#FF8C00" letter-spacing="2" text-anchor="middle">BALAJI</text>
+
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad512)"/>
+  <rect x="12" y="12" width="488" height="488" rx="88" fill="none" stroke="url(#orangeGrad512)" stroke-width="12"/>
+
+  <g clip-path="url(#circleClip512)">
+    <image href="https://res.cloudinary.com/pqs85ndb/image/upload/v1785676217/IMG-20260802-WA0004_pvecpl.jpg" x="20" y="20" width="472" height="472" preserveAspectRatio="xMidYMid slice" />
+  </g>
+
+  <rect x="20" y="20" width="472" height="472" rx="80" fill="none" stroke="#FF6B00" stroke-width="8" opacity="0.8"/>
 </svg>

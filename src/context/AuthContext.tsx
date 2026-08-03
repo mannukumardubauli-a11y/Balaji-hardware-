@@ -45,13 +45,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // Read initial login state & role from localStorage
+  // Read initial login state & role from localStorage (defaults to false on new devices)
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('is_logged_in');
-      return saved ? JSON.parse(saved) : true;
+      return saved !== null ? JSON.parse(saved) : false;
     } catch (e) {
-      return true;
+      return false;
     }
   });
 
@@ -64,12 +64,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [profile, setProfile] = useState<UserProfile | null>(() => ({
-    uid: role === 'Owner' ? 'demo-owner-id' : 'demo-helper-id',
-    email: role === 'Owner' ? 'admin@balajihardware.com' : 'helper@balajihardware.com',
-    name: role === 'Owner' ? 'Manoj Sharma (Admin)' : 'Ramesh Kumar (Helper)',
-    role: role
-  }));
+  const [profile, setProfile] = useState<UserProfile | null>(() => {
+    try {
+      const savedProfile = localStorage.getItem('user_profile');
+      if (savedProfile) {
+        return JSON.parse(savedProfile);
+      }
+    } catch (e) {}
+    return {
+      uid: role === 'Owner' ? 'demo-owner-id' : 'demo-helper-id',
+      email: role === 'Owner' ? 'admin@balajihardware.com' : 'helper@balajihardware.com',
+      name: role === 'Owner' ? 'Manoj Sharma (Admin)' : 'Ramesh Kumar (Helper)',
+      role: role
+    };
+  });
 
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -160,6 +168,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('user_role', role);
   }, [role]);
+
+  useEffect(() => {
+    if (profile) {
+      localStorage.setItem('user_profile', JSON.stringify(profile));
+    } else {
+      localStorage.removeItem('user_profile');
+    }
+  }, [profile]);
 
   // Load custom credentials from localStorage or defaults
   const getSavedCredentials = () => {

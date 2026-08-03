@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Smartphone, X, Check, Share, MoreVertical, Sparkles } from 'lucide-react';
+import { HanumanLogo } from './HanumanLogo';
 
 export const PWAInstallPrompt: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -90,9 +91,7 @@ export const PWAInstallPrompt: React.FC = () => {
       {showBanner && (
         <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white px-4 py-2.5 shadow-lg flex items-center justify-between gap-3 text-xs sm:text-sm border-b border-orange-500/40 sticky top-0 z-40">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-black/30 backdrop-blur-md p-1.5 flex items-center justify-center shrink-0 border border-white/20">
-              <img src="./pwa-icon.svg" alt="Balaji App Icon" className="w-full h-full rounded-lg object-contain" />
-            </div>
+            <HanumanLogo size={36} className="shrink-0 rounded-xl" />
             <div className="truncate">
               <div className="font-bold text-white flex items-center gap-1">
                 <span>Sri Balaji Hardware Mobile App</span>
@@ -144,9 +143,7 @@ export const PWAInstallPrompt: React.FC = () => {
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-2 flex items-center justify-center shadow-lg">
-                <img src="./pwa-icon.svg" alt="App Logo" className="w-full h-full rounded-xl object-contain" />
-              </div>
+              <HanumanLogo size={48} className="shrink-0 rounded-2xl shadow-lg" />
               <div>
                 <h3 className="text-lg font-bold text-white">Mobile Screen me App Add Karein</h3>
                 <p className="text-xs text-orange-400 font-medium">Sri Balaji Hardware & Paint Store</p>
